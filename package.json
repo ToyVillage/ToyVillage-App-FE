@@ -11,6 +11,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify": "yarn lint && yarn typecheck && yarn build",
+    "verify:e2e": "node scripts/run-scenarios.mjs",
+    "harness:map-tokens": "node scripts/map-tokens.mjs",
+    "harness:verify": "node scripts/verify.mjs",
+    "harness:gate": "node scripts/gate-check.mjs",
+    "harness:loop": "node scripts/loop-guard.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

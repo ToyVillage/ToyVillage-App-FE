@@ -1,4 +1,25 @@
-# React + TypeScript + Vite
+# ToyVillage App FE
+
+React + TypeScript + Vite + Emotion + TanStack Query + Zustand + React Router, FSD-lite 구조.
+
+## Publishing Harness (Figma → Code)
+
+개발자의 **행동명세 + Figma 프레임**을 FSD-lite 컴포넌트로 퍼블리싱하는 agent-agnostic 하네스.
+어떤 AI 에이전트(Claude Code / Codex)든 **`harness/RUNBOOK.md`**를 동일하게 따른다.
+
+- 계약/규칙: `harness/design-rules.md`, `harness/design-input-contract.md`, `harness/no-progress.md`
+- 입력: `harness/specs/<feature>.spec.md` (템플릿: `harness/templates/behavioral-spec.md`)
+- 스크립트: `scripts/map-tokens.mjs`(raw 토큰 수집·diff, 읽기전용), `verify.mjs`, `gate-check.mjs`(승인 게이트), `loop-guard.mjs`(N=3+무진전), `run-scenarios.mjs`(= `verify:e2e`)
+- 명령: `yarn harness:map-tokens <f>`, `yarn harness:gate <f>`, `yarn harness:loop record <f> …`, `yarn verify`, `yarn verify:e2e <f>`
+
+흐름: Figma 추출 ‖ 시나리오 초안 → 🚦개발자 중간 승인 게이트 → 퍼블리싱 → verify 인너루프 → (조건부)Playwright → 가드레일 → 육안 확인.
+참고: 이 저장소 Figma는 Variables 미노출 → 토큰은 raw 수집 후 개발자가 명명(`harness/design-input-contract.md`).
+
+레퍼런스 슬라이스: `notice-list` (공지 목록) — `src/pages/notice`, `tests/e2e/notice-list.spec.ts`.
+
+---
+
+## (template) React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

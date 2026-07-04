@@ -18,6 +18,11 @@ dist-ssr
 # 하네스 per-run 산출물 (승인 회귀 스펙은 tests/e2e에 별도 커밋)
 harness/artifacts/
 
+# Playwright 출력
+test-results/
+playwright-report/
+.playwright/
+
 # Yarn Berry (node-modules linker, zero-install 미적용)
 .yarn/*
 !.yarn/patches

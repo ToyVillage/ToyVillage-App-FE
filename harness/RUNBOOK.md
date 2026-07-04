@@ -14,7 +14,7 @@
 ## 단계 (7)
 
 ### ① 추출 ‖ 시나리오 초안 (병렬)
-- **추출:** `get_figma_data(fileKey, nodeId)` → 구조/값. `map-tokens.mjs`로 raw 토큰 후보 + 기존 diff 생성 → `artifacts/token-candidates.json`, `token-diff.report.md`. 아이콘은 `download_figma_images`.
+- **추출:** `get_figma_data(fileKey, nodeId)` 호출 → **응답을 `artifacts/<feature>.figma.txt`로 저장**(map-tokens의 입력). 그다음 `node scripts/map-tokens.mjs <feature>`로 raw 토큰 후보 + 기존 diff 생성 → `artifacts/<feature>.token-candidates.json`, `<feature>.token-diff.report.md`. 아이콘은 `download_figma_images`.
   - MCP 불가 시: `design-input-contract.md` §5의 STOP-and-report(수동 토큰).
 - **시나리오 초안:** `requires_functional_test: true`면 `prompts/draft-scenarios.md`로 행동명세 → 시나리오 초안을 `templates/scenario-draft.md` 형식으로 **`artifacts/<feature>.scenario-draft.md`에 출력**(핵심→엣지). `false`면 생략.
 - **컴포넌트맵 초안:** `templates/component-map.md` 형식으로 Figma 노드 → repo 컴포넌트 매핑을 **`artifacts/<feature>.component-map.md`에 출력**.
