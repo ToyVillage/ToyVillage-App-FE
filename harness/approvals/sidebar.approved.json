@@ -1,0 +1,11 @@
+{
+  "feature": "sidebar",
+  "approvedAt": "2026-07-05T14:15:40.175Z",
+  "approvedBy": "codex",
+  "scenarioIds": [
+    "S1",
+    "S2"
+  ],
+  "scenarioHash": "0ff010dbc5c81826ea9ba66f23eb25f212eed9c7080d0f0b5ada84e287663c2b",
+  "e2eHash": "3b7560858f68ec6497ffee2c5a6d52b19ac1b5f32fa78abe6f62c8b4258697cd"
+}

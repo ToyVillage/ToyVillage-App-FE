@@ -19,12 +19,6 @@ export function NoticeListPage() {
 
   return (
     <Page>
-      <MenuIcon aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </MenuIcon>
-
       <Content>
         <Header>
           <div>
@@ -50,31 +44,10 @@ export function NoticeListPage() {
 }
 
 const Page = styled.main`
-  position: relative;
   padding: ${({ theme }) => theme.space.xl};
   background: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
   font-family: ${({ theme }) => theme.font.body};
-`
-
-const MenuIcon = styled.div`
-  position: absolute;
-  top: ${({ theme }) => theme.layout.menuY};
-  left: ${({ theme }) => theme.layout.menuX};
-  display: flex;
-  width: ${({ theme }) => theme.layout.menuSize};
-  height: ${({ theme }) => theme.layout.menuSize};
-  flex-direction: column;
-  justify-content: center;
-  gap: ${({ theme }) => theme.space.pillY};
-
-  span {
-    display: block;
-    width: 100%;
-    height: ${({ theme }) => theme.space.xs};
-    border-radius: ${({ theme }) => theme.radius.sm};
-    background: ${({ theme }) => theme.colors.text};
-  }
 `
 
 const Content = styled.div`
