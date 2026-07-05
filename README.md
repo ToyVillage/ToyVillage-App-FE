@@ -9,8 +9,18 @@ React + TypeScript + Vite + Emotion + TanStack Query + Zustand + React Router, F
 
 - 계약/규칙: `harness/design-rules.md`, `harness/design-input-contract.md`, `harness/no-progress.md`
 - 입력: `harness/specs/<feature>.spec.md` (템플릿: `harness/templates/behavioral-spec.md`)
-- 스크립트: `scripts/map-tokens.mjs`(raw 토큰 수집·diff, 읽기전용), `verify.mjs`, `gate-check.mjs`(승인 게이트), `loop-guard.mjs`(N=3+무진전), `run-scenarios.mjs`(= `verify:e2e`)
-- 명령: `yarn harness:map-tokens <f>`, `yarn harness:gate <f>`, `yarn harness:loop record <f> …`, `yarn verify`, `yarn verify:e2e <f>`
+- 스크립트: `scripts/map-tokens.mjs`(raw 토큰 수집·diff, 읽기전용), `verify.mjs`, `gate-check.mjs`(승인 게이트), `loop-guard.mjs`(N=3+무진전), `run-scenarios.mjs`(= `verify:e2e`), `approve.mjs`(승인/freeze), `pre-commit-gate.mjs`
+- 명령: `yarn harness:map-tokens <f>`, `yarn harness:approve <f> --by <name> --scenarios S1,S2`, `yarn harness:gate <f>`, `yarn verify`, `yarn verify:e2e <f>`
+- 승인 기록: `harness/approvals/<f>.approved.json` + `.scenario-draft.md` (**커밋됨** → clone/CI 재현). 승인 후 시나리오/e2e 변경 시 해시 불일치로 게이트 STOP.
+- 게이트 강제: git `pre-commit` 훅이 승인 없는 feature 코드 커밋을 거부. `yarn install`(postinstall) 또는 `yarn hooks:install`로 활성화.
+
+### 재현 세팅 (신선한 clone / CI)
+```bash
+yarn install          # 훅 자동 설치(postinstall)
+yarn e2e:setup        # Playwright chromium 설치
+yarn verify           # lint/typecheck/build
+yarn verify:e2e notice-list   # 게이트 → dev 서버 → 기능 테스트
+```
 
 흐름: Figma 추출 ‖ 시나리오 초안 → 🚦개발자 중간 승인 게이트 → 퍼블리싱 → verify 인너루프 → (조건부)Playwright → 가드레일 → 육안 확인.
 참고: 이 저장소 Figma는 Variables 미노출 → 토큰은 raw 수집 후 개발자가 명명(`harness/design-input-contract.md`).

@@ -6,7 +6,7 @@
 
 ## 체크리스트 (모두 확인해야 승인)
 - [ ] **Figma frame/node 일치** — 올바른 fileKey/nodeId를 추출했는가
-- [ ] **토큰/theme 매핑** — `artifacts/token-diff.report.md`의 raw 후보에 시맨틱 이름을 부여했는가
+- [ ] **토큰/theme 매핑** — `artifacts/<feature>.token-diff.report.md`의 raw 후보에 시맨틱 이름을 부여했는가
       - 이 저장소는 Figma Variables가 없어 자동 명명 불가 → 아래 표에 개발자가 이름 지정
 - [ ] **component-map** — `artifacts/<feature>.component-map.md`의 노드→컴포넌트 매핑이 맞는가
 - [ ] **과분리 여부** — 새 컴포넌트 후보가 과하지 않은가(기존 재사용 우선)
@@ -25,17 +25,21 @@
 - [ ] S1: …
 - [ ] S2: …
 
-## 승인 액션
-위가 모두 OK면 아래 sentinel을 작성한다(= 승인):
+## 승인 액션 (헬퍼로 작성 — 손으로 JSON/해시 쓰지 않는다)
+위가 모두 OK면:
 
-`harness/artifacts/<feature>.approved.json`
-```json
-{
-  "feature": "<feature>",
-  "approvedAt": "<ISO-8601>",
-  "approvedBy": "<name>",
-  "scenarioIds": ["S1", "S2"]
-}
-```
-> 승인 후 시나리오는 동결된다. AI는 이 시나리오만 Playwright로 변환할 수 있고 재도출할 수 없다.
-> 정적 퍼블리싱(`requires_functional_test: false`)이면 `scenarioIds: []`로 둔다(게이트 자체는 여전히 필요).
+1. 승인 시나리오를 **durable 경로**에 둔다: `harness/approvals/<feature>.scenario-draft.md`
+2. 승인 명령 실행 (scenarioHash 자동 계산):
+   ```
+   node scripts/approve.mjs <feature> --by <name> --scenarios S1,S2
+   ```
+   → `harness/approvals/<feature>.approved.json` 생성 (durable, Git 커밋됨)
+3. (기능 테스트 작성·통과 후) e2e 동결:
+   ```
+   node scripts/approve.mjs <feature> --freeze
+   ```
+   → sentinel 에 e2eHash stamp.
+
+> 승인 기록은 `harness/approvals/`(커밋됨)에 남아 clone/CI에서도 재현된다.
+> 승인 후 시나리오/e2e가 바뀌면 gate-check가 해시 불일치로 STOP(재승인 필요).
+> 정적 퍼블리싱(`requires_functional_test: false`)이면 `--scenarios` 생략(scenarioIds:[]); 게이트 자체는 여전히 필요.

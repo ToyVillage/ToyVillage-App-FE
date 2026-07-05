@@ -16,6 +16,10 @@
     "harness:verify": "node scripts/verify.mjs",
     "harness:gate": "node scripts/gate-check.mjs",
     "harness:loop": "node scripts/loop-guard.mjs",
+    "harness:approve": "node scripts/approve.mjs",
+    "hooks:install": "node scripts/install-hooks.mjs",
+    "e2e:setup": "yarn playwright install chromium",
+    "postinstall": "node scripts/install-hooks.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

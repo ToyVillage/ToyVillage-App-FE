@@ -33,7 +33,7 @@ Claude / Codex 모두 이 문서를 SSOT로 읽는다. (설계 문서의 툴 이
    - 색 → 사용 빈도와 함께 hex 목록
    - 폰트 → family/weight/size 조합
    - 간격/반경 → px 값 목록
-2. 후보를 `harness/artifacts/token-candidates.json` + `token-diff.report.md`로 출력한다.
+2. 후보를 `harness/artifacts/<feature>.token-candidates.json` + `<feature>.token-diff.report.md`로 출력한다.
 3. **의미 이름은 자동으로 붙이지 않는다.** 개발자가 중간 확인 게이트(`figma-review.md`)에서 후보에 시맨틱 이름(`color.primary` 등)을 부여한다.
 4. 기존 `src/shared/theme/tokens.ts`(현재 파란 플레이스홀더)와 대조하되 **기존 값 우선**, 차이는 diff로 보고한다. `map-tokens.mjs`는 **tokens.ts를 절대 쓰지 않는다**(읽기 전용).
 5. 개발자가 확정한 토큰만 개발자가 tokens.ts에 반영한다(하네스가 아님). `color.*`는 `theme.ts`에서 `colors.*`로 투영됨을 유념.

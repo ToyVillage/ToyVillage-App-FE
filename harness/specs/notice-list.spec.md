@@ -4,6 +4,7 @@ figma:
   fileKey: fkbMQaiPeIufKzjXXoWAPS
   nodeId: 1541:1442
 requires_functional_test: true
+paths: src/pages/notice, src/features/create-notice, src/entities/notice
 ---
 
 # 공지사항 목록 행동명세

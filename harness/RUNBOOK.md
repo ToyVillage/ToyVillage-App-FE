@@ -24,15 +24,17 @@
 ### ② 🚦 통합 중간 게이트 (개발자 승인, 퍼블리싱 전 1회)
 개발자가 `templates/figma-review.md`를 채워 확인:
 - Figma frame/node 일치 / 토큰·theme 매핑(후보에 시맨틱 이름 부여) / component-map / 새 컴포넌트 후보 과다 여부 / 애매 항목 TODO / **시나리오 초안 승인**.
-- 승인 = `scripts/gate-check.mjs`가 요구하는 sentinel `artifacts/<feature>.approved.json` 작성 (`{feature, approvedAt, approvedBy, scenarioIds}`).
-- **승인된 시나리오는 동결(frozen)** — 이후 재작성/재도출 금지.
+- 승인 시나리오를 durable 경로 `approvals/<feature>.scenario-draft.md`에 두고, `node scripts/approve.mjs <feature> --by <name> --scenarios S1,S2` 실행 → sentinel `approvals/<feature>.approved.json` 생성(**Git 커밋됨 — clone/CI 재현 가능**).
+- **승인된 시나리오는 동결(frozen)** — 이후 재작성/재도출 금지. 기능 테스트 통과 후 `node scripts/approve.mjs <feature> --freeze`로 e2eHash stamp.
 
-**Sentinel 유효성 계약 (gate-check.mjs가 검사):**
+**Sentinel 유효성 계약 (gate-check.mjs가 검사, `approvals/`에서 읽음):**
 - JSON 파싱 가능 AND 필수 필드(`feature, approvedAt, approvedBy, scenarioIds`) 존재
-- `feature` == CLI 인자로 넘긴 feature 슬러그
-- `requires_functional_test: true` → `scenarioIds`는 **비어있지 않은 배열**
+- `feature` == CLI 인자 슬러그
+- `requires_functional_test: true` → `scenarioIds` 비어있지 않음 + **scenarioHash가 `approvals/<feature>.scenario-draft.md`와 일치**(승인 후 변경 감지). e2eHash 있으면 `tests/e2e/<feature>.spec.ts`와 일치.
 - `requires_functional_test: false` → `scenarioIds: []` 허용(정적 퍼블리싱)
 - 위 중 하나라도 실패 = **invalid → 하드 STOP**
+
+**게이트 강제(honor-system 아님):** git `pre-commit` 훅(`.githooks/pre-commit` → `scripts/pre-commit-gate.mjs`)이, spec `paths:`가 소유한 `src/` 코드가 스테이징됐는데 유효 승인이 없으면 **커밋을 거부**한다. `yarn install`(postinstall) 또는 `yarn hooks:install`로 훅 활성화.
 
 **정적 feature도 게이트 필요:** sentinel은 기능 테스트 여부와 무관한 **개발자 디자인 승인 게이트**이므로, `requires_functional_test: false`여도 sentinel(`scenarioIds: []`)이 있어야 ③ 퍼블리싱이 진행된다.
 
@@ -48,7 +50,8 @@
 
 ### ⑤ 기능 테스트 (조건부, Playwright)
 - `requires_functional_test: false` → **이 단계 생략**, ⑦로.
-- `true` → `gate-check.mjs`로 승인 시나리오 확인(없으면 차단). 승인 시나리오를 `tests/e2e/<feature>.spec.ts`로 **변환만**(재도출 금지). `scripts/run-scenarios.mjs`(= `verify:e2e`) 실행.
+- 선행 1회: `yarn e2e:setup`(= `yarn playwright install chromium`)으로 브라우저 설치.
+- `true` → 승인 시나리오(`approvals/<feature>.scenario-draft.md`)를 `tests/e2e/<feature>.spec.ts`로 **변환만**(재도출 금지) → `node scripts/approve.mjs <feature> --freeze`로 e2eHash 동결 → `node scripts/run-scenarios.mjs <feature>`(= `yarn verify:e2e <feature>`, 게이트 먼저 확인 후 Playwright).
 - 실패 시 **코드** 수정 후 ④부터 재시작.
 
 ### ⑥ 가드레일
