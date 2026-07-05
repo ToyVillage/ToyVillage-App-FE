@@ -6,7 +6,11 @@ interface CategoryTabsProps {
   onSelect: (category: string) => void
 }
 
-export function CategoryTabs({ categories, active, onSelect }: CategoryTabsProps) {
+export function CategoryTabs({
+  categories,
+  active,
+  onSelect,
+}: CategoryTabsProps) {
   return (
     <Tabs>
       {categories.map((c) => (
@@ -26,17 +30,27 @@ export function CategoryTabs({ categories, active, onSelect }: CategoryTabsProps
 
 const Tabs = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.space.sm};
+  width: 100%;
+  margin-top: ${({ theme }) => theme.layout.tabOffset};
 `
 
 const Tab = styled.button<{ $active: boolean }>`
-  border: none;
+  border: 0;
+  border-bottom: ${({ $active, theme }) =>
+    $active
+      ? `${theme.space.xs} solid ${theme.colors.text}`
+      : `${theme.space.xs} solid transparent`};
   cursor: pointer;
-  padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.lg};
-  border-radius: ${({ theme }) => theme.radius.pill};
+  padding: ${({ theme }) => theme.space.controlY}
+    ${({ theme }) => theme.space.tableX};
   font-weight: 600;
-  background: ${({ theme, $active }) =>
-    $active ? theme.colors.primaryBg : 'transparent'};
-  color: ${({ theme, $active }) =>
-    $active ? theme.colors.primary : theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.font.size.date};
+  line-height: 1.2;
+  background: transparent;
+  color: ${({ theme, $active }) => ($active ? theme.colors.text : theme.colors.textMuted)};
+
+  &[aria-pressed='false'] {
+    font-size: ${({ theme }) => theme.font.size.tableHeader};
+    font-weight: 500;
+  }
 `
