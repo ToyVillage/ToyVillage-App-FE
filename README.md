@@ -7,6 +7,8 @@ React + TypeScript + Vite + Emotion + TanStack Query + Zustand + React Router, F
 개발자의 **행동명세 + Figma 프레임**을 FSD-lite 컴포넌트로 퍼블리싱하는 agent-agnostic 하네스.
 어떤 AI 에이전트(Claude Code / Codex)든 **`harness/RUNBOOK.md`**를 동일하게 따른다.
 
+> 📖 **전체 개요·흐름·집행 메커니즘**: [`harness/HARNESS.md`](harness/HARNESS.md)
+
 - 계약/규칙: `harness/design-rules.md`, `harness/design-input-contract.md`, `harness/no-progress.md`
 - 입력: `harness/specs/<feature>.spec.md` (템플릿: `harness/templates/behavioral-spec.md`)
 - 스크립트: `scripts/map-tokens.mjs`(raw 토큰 수집·diff, 읽기전용), `verify.mjs`, `gate-check.mjs`(승인 게이트), `loop-guard.mjs`(N=3+무진전), `run-scenarios.mjs`(= `verify:e2e`), `approve.mjs`(승인/freeze), `pre-commit-gate.mjs`
