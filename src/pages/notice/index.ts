@@ -1,2 +1,6 @@
 export { NoticeListPage } from './NoticeListPage'
 export { CreateNoticePage } from './CreateNoticePage'
+export { NoticeDetailPage } from './NoticeDetailPage'
+export { NoticeGuidePage } from './NoticeGuidePage'
+export { NoticeResourcesPage } from './NoticeResourcesPage'
+export { NoticeReservationsPage } from './NoticeReservationsPage'
