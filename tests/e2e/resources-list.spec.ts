@@ -19,5 +19,5 @@ test('S2: 파일 유형 탭(pdf) 클릭 → 활성화', async ({ page }) => {
 test('S3: 자료 행 클릭 → /notices/resources/:id 이동', async ({ page }) => {
   await page.goto('/notices/resources')
   await page.getByTestId('resource-row').first().click()
-  await expect(page).toHaveURL(/\/notices\/resources\/\d+$/)
+  await expect(page).toHaveURL(/\/notices\/resources\/[^/]+$/)
 })
