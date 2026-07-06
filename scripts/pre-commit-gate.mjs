@@ -43,6 +43,8 @@ for (const { feature, paths } of features) {
   if (paths.length === 0) continue // 강제 불가(경고는 아래)
   const touched = staged.some((s) => paths.some((p) => s === p || s.startsWith(p + '/') || s.startsWith(p)))
   if (!touched) continue
+
+  // ① 승인 게이트(퍼블리싱 승인)
   const gate = spawnSync('node', [join(root, 'scripts', 'gate-check.mjs'), feature], {
     encoding: 'utf8',
   })
@@ -52,6 +54,21 @@ for (const { feature, paths } of features) {
       reason = JSON.parse(gate.stdout).reason ?? ''
     } catch {
       reason = (gate.stdout || gate.stderr || '').trim()
+    }
+    blocked.push({ feature, reason })
+    continue
+  }
+
+  // ② 육안 최종 확인(stage ⑦) — 개발자 서명 필요
+  const visual = spawnSync('node', [join(root, 'scripts', 'visual-check.mjs'), feature], {
+    encoding: 'utf8',
+  })
+  if (visual.status !== 0) {
+    let reason = '육안 확인 미완료'
+    try {
+      reason = JSON.parse(visual.stdout).reason ?? reason
+    } catch {
+      /* keep default */
     }
     blocked.push({ feature, reason })
   }
@@ -72,7 +89,9 @@ if (warned.length) {
 if (blocked.length) {
   console.error('\n[pre-commit] ❌ 승인 게이트 미통과 — 커밋 거부:')
   for (const b of blocked) console.error(`  - ${b.feature}: ${b.reason}`)
-  console.error('\n해결: node scripts/approve.mjs <feature> --by <name> --scenarios ...  (또는 --freeze)')
+  console.error('\n해결:')
+  console.error('  · 승인:   node scripts/approve.mjs <feature> --by <name> --scenarios ...  (또는 --freeze)')
+  console.error('  · 육안확인: yarn dev 로 Figma와 비교 후 → node scripts/visual-check.mjs <feature> --pass --by <name>')
   process.exit(1)
 }
 process.exit(0)

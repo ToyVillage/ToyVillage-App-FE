@@ -34,7 +34,7 @@
 - `requires_functional_test: false` → `scenarioIds: []` 허용(정적 퍼블리싱)
 - 위 중 하나라도 실패 = **invalid → 하드 STOP**
 
-**게이트 강제(honor-system 아님):** git `pre-commit` 훅(`.githooks/pre-commit` → `scripts/pre-commit-gate.mjs`)이, spec `paths:`가 소유한 `src/` 코드가 스테이징됐는데 유효 승인이 없으면 **커밋을 거부**한다. `yarn install`(postinstall) 또는 `yarn hooks:install`로 훅 활성화.
+**게이트 강제(honor-system 아님):** git `pre-commit` 훅(`.githooks/pre-commit` → `scripts/pre-commit-gate.mjs`)이, spec `paths:`가 소유한 `src/` 코드가 스테이징됐는데 **①유효 승인이 없거나 ②육안 확인(pass) 기록이 없으면** 커밋을 거부한다. `yarn install`(postinstall) 또는 `yarn hooks:install`로 훅 활성화.
 
 **정적 feature도 게이트 필요:** sentinel은 기능 테스트 여부와 무관한 **개발자 디자인 승인 게이트**이므로, `requires_functional_test: false`여도 sentinel(`scenarioIds: []`)이 있어야 ③ 퍼블리싱이 진행된다.
 
@@ -58,9 +58,11 @@
 - `loop-guard.mjs`가 `no-progress.md`의 조건 + N=3으로 CONTINUE/STOP 판정.
 - STOP이면 루프 중단, 개발자에게 반환.
 
-### ⑦ 최종 육안 확인 (개발자)
-- 개발자가 `yarn dev`로 Figma 원본과 로컬을 눈으로 비교.
-- 결과를 `artifacts/visual-check.<feature>.json`에 기록(pass/fail) → 재개/Codex 실행이 이 단계 완료를 알 수 있게.
+### ⑦ 최종 육안 확인 (개발자) — **커밋 전 필수, 강제됨**
+- 개발자가 `yarn dev`로 Figma 원본과 로컬을 눈으로 비교한다.
+- 확인 후 **서명 기록**: `node scripts/visual-check.mjs <feature> --pass --by <name>`
+  → `approvals/<feature>.visual-check.json`(durable, Git 커밋). 문제 있으면 `--fail`.
+- **강제**: pre-commit 훅이 이 feature의 코드 커밋 시 **visual-check `pass` 기록이 없으면 커밋을 거부**한다. 즉 e2e 통과만으로 커밋되지 않고, 사람 육안 확인 서명이 있어야 커밋된다.
 
 ## 정적 vs 기능 분기
 - `requires_functional_test`가 유일한 결정 기준. `true`+승인 시나리오 없음 → ⑤ 차단. `false` → ⑤ 생략, ④ + ⑦로 종료.
