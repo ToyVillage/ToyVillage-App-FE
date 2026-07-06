@@ -34,7 +34,7 @@
 - `requires_functional_test: false` → `scenarioIds: []` 허용(정적 퍼블리싱)
 - 위 중 하나라도 실패 = **invalid → 하드 STOP**
 
-**게이트 강제(honor-system 아님):** git `pre-commit` 훅(`.githooks/pre-commit` → `scripts/pre-commit-gate.mjs`)이, spec `paths:`가 소유한 `src/` 코드가 스테이징됐는데 유효 승인이 없으면 **커밋을 거부**한다. `yarn install`(postinstall) 또는 `yarn hooks:install`로 훅 활성화.
+**승인 게이트 범위:** `gate-check.mjs`는 **퍼블리싱(③)·기능 테스트(⑤) 진입 전**에 승인 시나리오를 확인하는 용도로만 쓴다(AI가 시나리오를 제멋대로 재도출하지 못하게). **커밋은 막지 않는다** — 커밋 여부는 개발자가 판단한다.
 
 **정적 feature도 게이트 필요:** sentinel은 기능 테스트 여부와 무관한 **개발자 디자인 승인 게이트**이므로, `requires_functional_test: false`여도 sentinel(`scenarioIds: []`)이 있어야 ③ 퍼블리싱이 진행된다.
 
@@ -59,12 +59,12 @@
 - STOP이면 루프 중단, 개발자에게 반환.
 
 ### ⑦ 최종 육안 확인 (개발자)
-- 개발자가 `yarn dev`로 Figma 원본과 로컬을 눈으로 비교.
-- 결과를 `artifacts/visual-check.<feature>.json`에 기록(pass/fail) → 재개/Codex 실행이 이 단계 완료를 알 수 있게.
+- 개발자가 `yarn dev`로 Figma 원본과 로컬을 눈으로 비교한다.
+- 문제 있으면 코드를 고치고 다시 확인한다. (강제/서명 없음 — 커밋 여부는 개발자가 판단)
 
 ## 정적 vs 기능 분기
 - `requires_functional_test`가 유일한 결정 기준. `true`+승인 시나리오 없음 → ⑤ 차단. `false` → ⑤ 생략, ④ + ⑦로 종료.
 
 ## Codex 패리티 기준
 - 이 RUNBOOK과 `prompts/*`에는 **에이전트 전용 도구 이름이 없어야** 한다(Figma MCP·node 스크립트는 양쪽 공용).
-- 패리티 = Codex가 동일 산출물(`<feature>.approved.json`, `loop-state.json`, `visual-check.<feature>.json`)에 도달.
+- 패리티 = Codex가 동일 산출물(`<feature>.approved.json`, `loop-state.json`)에 도달.

@@ -6,7 +6,7 @@ figma:
   fileKey: <fileKey>
   nodeId: <nodeId>               # 예: 1541:1442
 requires_functional_test: true    # true=Playwright 기능 테스트 필요 / false=정적 퍼블리싱(생략)
-paths: src/pages/<x>, src/features/<x>   # 이 feature가 소유하는 src 경로. pre-commit 게이트 강제 대상.
+paths: src/pages/<x>, src/features/<x>   # 이 feature가 소유하는 src 경로(참고용, 선택).
 ---
 
 # <기능 이름> 행동명세
