@@ -24,7 +24,23 @@ export function DataTable({ rows, onRowClick, rowTestId }: DataTableProps) {
         <HeadCell $width="date">날짜</HeadCell>
       </Header>
       {rows.map((r) => (
-        <Row key={r.id} onClick={() => onRowClick?.(r.id)} data-testid={rowTestId}>
+        <Row
+          key={r.id}
+          data-testid={rowTestId}
+          role={onRowClick ? 'link' : undefined}
+          tabIndex={onRowClick ? 0 : undefined}
+          onClick={onRowClick ? () => onRowClick(r.id) : undefined}
+          onKeyDown={
+            onRowClick
+              ? (e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onRowClick(r.id)
+                  }
+                }
+              : undefined
+          }
+        >
           <Cell $width="category">
             <Pill>{r.pill}</Pill>
           </Cell>
