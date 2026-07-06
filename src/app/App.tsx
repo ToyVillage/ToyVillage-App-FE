@@ -3,11 +3,15 @@ import { HomePage } from '@/pages/home'
 import {
   CreateNoticePage,
   NoticeDetailPage,
-  NoticeGuidePage,
   NoticeListPage,
-  NoticeResourcesPage,
-  NoticeReservationsPage,
-} from '@/pages/notice'
+} from '@/pages/notices/notice'
+import {
+  CreateResourcePage,
+  ResourceDetailPage,
+  ResourceListPage,
+} from '@/pages/notices/resources'
+import { NoticeGuidePage } from '@/pages/notices/guide'
+import { NoticeReservationsPage } from '@/pages/notices/reservations'
 import { Sidebar, SidebarToggleButton } from '@/features/sidebar'
 
 // 라우트 정의(app 레이어). 페이지는 pages 레이어에서 가져온다.
@@ -26,7 +30,12 @@ export function App() {
         <Route path="/notices/list/create" element={<CreateNoticePage />} />
         <Route path="/notices/list/:id" element={<NoticeDetailPage />} />
         <Route path="/notices/guide" element={<NoticeGuidePage />} />
-        <Route path="/notices/resources" element={<NoticeResourcesPage />} />
+        <Route path="/notices/resources" element={<ResourceListPage />} />
+        <Route
+          path="/notices/resources/create"
+          element={<CreateResourcePage />}
+        />
+        <Route path="/notices/resources/:id" element={<ResourceDetailPage />} />
         <Route
           path="/notices/reservations"
           element={<NoticeReservationsPage />}

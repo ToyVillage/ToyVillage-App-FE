@@ -1,17 +1,18 @@
 import styled from '@emotion/styled'
 
-export function NoticeResourcesPage() {
+// 슬라이스 스텁: "자료 추가하기" 이동 대상. 업로드 폼(pdf/jpg·jpeg/png/기타 제한)은 추후.
+export function CreateResourcePage() {
   return (
     <Page>
-      <Title>자료실</Title>
+      <Title>자료 추가</Title>
     </Page>
   )
 }
 
 const Page = styled.main`
-  min-height: 100vh;
   padding: ${({ theme }) => theme.space.xl};
   background: ${({ theme }) => theme.colors.background};
+  min-height: 100vh;
 `
 
 const Title = styled.h1`
