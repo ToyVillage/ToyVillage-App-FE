@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
 import { Link, useLocation } from 'react-router-dom'
 import calendarIcon from './assets/calendar.svg'
@@ -21,12 +21,14 @@ export function Sidebar() {
   const { pathname } = useLocation()
   const isOpen = useSidebarStore((state) => state.isOpen)
   const close = useSidebarStore((state) => state.close)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isOpen) return
 
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    panelRef.current?.focus()
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') close()
@@ -44,12 +46,14 @@ export function Sidebar() {
 
   return (
     <Layer>
-      <Overlay
-        type="button"
-        aria-label="사이드바 닫기"
-        onClick={close}
-      />
-      <Panel role="dialog" aria-modal="true" aria-label="사이드바">
+      <Overlay type="button" aria-label="사이드바 닫기" onClick={close} />
+      <Panel
+        ref={panelRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="사이드바"
+      >
         <CloseButton type="button" aria-label="사이드바 닫기" onClick={close}>
           <CloseIcon src={chevronLeftIcon} alt="" />
         </CloseButton>
