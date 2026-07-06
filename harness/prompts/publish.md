@@ -16,6 +16,7 @@
 - 서버 상태: TanStack Query(useEffect fetch 금지, Zustand 복제 금지). 클라 전역: Zustand.
 - API: `src/shared/api/axios.ts` 인스턴스. 이동: React Router. 타입 명시(`import type`).
 - 컴포넌트 경계: design-rules §7 (COMPONENT=경계, INSTANCE=재사용, frame/group/text=경계 아님). 과분리 금지.
+- **중복 금지(design-rules §7-1)**: 구조 유사한 컴포넌트가 이미 있으면 복제하지 말고 `shared/ui`로 추출해 기존+신규가 함께 쓰게 한다(예: DataTable, LinkButton).
 - FSD 배치: `src/{app,pages,features,entities,shared}` — import 방향은 `eslint.config.js`가 강제(=`yarn lint` 통과로 확인).
 - **승인 없이 새 shared 컴포넌트 생성/기존 컴포넌트 API 변경 금지.**
 

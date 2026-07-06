@@ -60,8 +60,8 @@
 
 ### ⑦ 최종 육안 확인 (개발자) — **커밋 전 필수, 강제됨**
 - 개발자가 `yarn dev`로 Figma 원본과 로컬을 눈으로 비교한다.
-- 확인 후 **서명 기록**: `node scripts/visual-check.mjs <feature> --pass --by <name>`
-  → `approvals/<feature>.visual-check.json`(durable, Git 커밋). 문제 있으면 `--fail`.
+- 확인 후 **서명 기록**: `yarn ok <feature...>` (여러 개 한 번에, `--by`는 git 이름 자동)
+  → `approvals/<feature>.visual-check.json`(durable, Git 커밋). 문제 있으면 `yarn harness:visual <feature> --fail --note "..."`.
 - **강제**: pre-commit 훅이 이 feature의 코드 커밋 시 **visual-check `pass` 기록이 없으면 커밋을 거부**한다. 즉 e2e 통과만으로 커밋되지 않고, 사람 육안 확인 서명이 있어야 커밋된다.
 
 ## 정적 vs 기능 분기

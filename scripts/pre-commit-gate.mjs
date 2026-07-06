@@ -91,7 +91,7 @@ if (blocked.length) {
   for (const b of blocked) console.error(`  - ${b.feature}: ${b.reason}`)
   console.error('\n해결:')
   console.error('  · 승인:   node scripts/approve.mjs <feature> --by <name> --scenarios ...  (또는 --freeze)')
-  console.error('  · 육안확인: yarn dev 로 Figma와 비교 후 → node scripts/visual-check.mjs <feature> --pass --by <name>')
+  console.error('  · 육안확인: yarn dev 로 Figma와 비교 후 → yarn ok <feature...>  (여러 개 한 번에, 이름 자동)')
   process.exit(1)
 }
 process.exit(0)
