@@ -19,7 +19,7 @@ interface CalendarDay {
 }
 
 export function NoticeGuidePage() {
-  const [month, setMonth] = useState(() => new Date(2026, 6, 1))
+  const [month, setMonth] = useState(() => startOfMonth(new Date()))
   const [query, setQuery] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
 
@@ -140,7 +140,7 @@ function createCalendarDays(month: Date, schedules: CloseSchedule[]) {
   const start = new Date(firstDay)
   start.setDate(firstDay.getDate() - firstDay.getDay())
 
-  return Array.from({ length: 35 }, (_, index): CalendarDay => {
+  return Array.from({ length: 42 }, (_, index): CalendarDay => {
     const date = new Date(start)
     date.setDate(start.getDate() + index)
 
@@ -189,6 +189,10 @@ function parseDate(value: string) {
 
 function addMonths(date: Date, amount: number) {
   return new Date(date.getFullYear(), date.getMonth() + amount, 1)
+}
+
+function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1)
 }
 
 function toDateKey(date: Date) {
