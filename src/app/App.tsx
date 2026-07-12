@@ -10,7 +10,10 @@ import {
   ResourceDetailPage,
   ResourceListPage,
 } from '@/pages/notices/resources'
-import { NoticeGuidePage } from '@/pages/notices/guide'
+import {
+  CreateCloseSchedulePage,
+  NoticeGuidePage,
+} from '@/pages/notices/guide'
 import { NoticeReservationsPage } from '@/pages/notices/reservations'
 import { Sidebar, SidebarToggleButton } from '@/features/sidebar'
 
@@ -30,6 +33,10 @@ export function App() {
         <Route path="/notices/list/create" element={<CreateNoticePage />} />
         <Route path="/notices/list/:id" element={<NoticeDetailPage />} />
         <Route path="/notices/guide" element={<NoticeGuidePage />} />
+        <Route
+          path="/notices/guide/create"
+          element={<CreateCloseSchedulePage />}
+        />
         <Route path="/notices/resources" element={<ResourceListPage />} />
         <Route
           path="/notices/resources/create"

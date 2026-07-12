@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import styled from '@emotion/styled'
 import { Link } from 'react-router-dom'
+import plusIcon from './assets/plus.svg'
 
 // + 아이콘 pill 링크 버튼. "공지/자료 생성하기" 등 라우트·라벨만 다른 버튼 공통화.
 interface LinkButtonProps {
@@ -11,7 +12,7 @@ interface LinkButtonProps {
 export function LinkButton({ to, children }: LinkButtonProps) {
   return (
     <Button to={to}>
-      <PlusIcon aria-hidden="true" />
+      <PlusIcon src={plusIcon} alt="" />
       <span>{children}</span>
     </Button>
   )
@@ -32,27 +33,9 @@ const Button = styled(Link)`
   line-height: 1.2;
 `
 
-const PlusIcon = styled.span`
-  position: relative;
+const PlusIcon = styled.img`
   width: ${({ theme }) => theme.layout.plusIcon};
   height: ${({ theme }) => theme.layout.plusIcon};
   flex: 0 0 ${({ theme }) => theme.layout.plusIcon};
-
-  &::before,
-  &::after {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    display: block;
-    width: 62.5%;
-    height: ${({ theme }) => theme.space.xs};
-    border-radius: ${({ theme }) => theme.radius.sm};
-    background: currentColor;
-    content: '';
-    transform: translate(-50%, -50%);
-  }
-
-  &::after {
-    transform: translate(-50%, -50%) rotate(90deg);
-  }
+  object-fit: none;
 `
