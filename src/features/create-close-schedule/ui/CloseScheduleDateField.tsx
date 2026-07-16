@@ -21,7 +21,7 @@ export const CloseScheduleDateField = forwardRef<
       <Label htmlFor={id}>{label}</Label>
       <Field>
         <DateText $empty={!value} aria-hidden="true">
-          {value ? formatDate(value) : '연도. 일. 월'}
+          {value ? formatDate(value) : '연도. 월. 일'}
         </DateText>
         <CalendarIcon viewBox="0 0 28 28" aria-hidden="true">
           <path d="M2.333 22.167c0 1.983 1.517 3.5 3.5 3.5h16.334c1.983 0 3.5-1.517 3.5-3.5v-9.334H2.333v9.334Zm19.834-17.5h-2.334V3.5c0-.7-.466-1.167-1.166-1.167S17.5 2.8 17.5 3.5v1.167h-7V3.5c0-.7-.467-1.167-1.167-1.167S8.167 2.8 8.167 3.5v1.167H5.833c-1.983 0-3.5 1.516-3.5 3.5V10.5h23.334V8.167c0-1.984-1.517-3.5-3.5-3.5Z" />

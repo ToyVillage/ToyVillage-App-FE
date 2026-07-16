@@ -14,6 +14,7 @@ test('S1: 생성 폼 표시', async ({ page }) => {
   await expect(page.getByRole('link', { name: '뒤로가기' })).toBeVisible()
   await expect(page.getByLabel('시작일')).toBeVisible()
   await expect(page.getByLabel('종료일')).toBeVisible()
+  await expect(page.getByText('연도. 월. 일')).toHaveCount(2)
   await expect(page.getByLabel(/제목/)).toBeVisible()
   await expect(page.getByRole('button', { name: '생성하기' })).toBeVisible()
 })
