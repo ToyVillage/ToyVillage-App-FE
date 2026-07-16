@@ -3,7 +3,6 @@ import styled from '@emotion/styled'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import {
-  getDefaultOperatingHours,
   getMockOperatingHours,
   updateMockOperatingHours,
   type OperatingHours,
@@ -23,12 +22,12 @@ interface OperatingHoursEditorProps {
 }
 
 export function OperatingHoursForm({ date }: OperatingHoursFormProps) {
-  const defaultHours = getDefaultOperatingHours(date)
-  const { data: hours = defaultHours } = useQuery({
+  const { data: hours, isPending } = useQuery({
     queryKey: ['operating-hours', date],
     queryFn: () => getMockOperatingHours(date),
-    placeholderData: defaultHours,
   })
+
+  if (isPending || !hours) return null
 
   return (
     <OperatingHoursEditor
