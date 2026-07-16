@@ -54,75 +54,72 @@ export function DataTable({ rows, onRowClick, rowTestId }: DataTableProps) {
 
 type ColumnWidth = 'category' | 'title' | 'date'
 
-function columnWidth(theme: import('@emotion/react').Theme, width: ColumnWidth) {
-  if (width === 'category') return theme.layout.tableCategoryWidth
-  if (width === 'title') return theme.layout.tableTitleWidth
-  return theme.layout.tableDateWidth
+function columnWidth(width: ColumnWidth) {
+  if (width === 'category') return '240px'
+  if (width === 'title') return '840px'
+  return '240px'
 }
 
 const Table = styled.div`
   width: 100%;
-  margin-top: ${({ theme }) => theme.layout.tableOffset};
+  margin-top: 20px;
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.table};
+  border-radius: 20px;
   background: ${({ theme }) => theme.colors.surface};
   overflow: hidden;
 `
 
 const Header = styled.div`
   display: flex;
-  min-height: ${({ theme }) => theme.layout.tableHeaderHeight};
+  min-height: 52px;
   background: ${({ theme }) => theme.colors.tableHeader};
 `
 
 const Row = styled.div`
   display: flex;
-  min-height: ${({ theme }) => theme.layout.tableRowHeight};
+  min-height: 92px;
   border-top: 1px solid ${({ theme }) => theme.colors.divider};
   cursor: pointer;
 `
 
 const HeadCell = styled.div<{ $width: ColumnWidth }>`
   display: flex;
-  width: ${({ theme, $width }) => columnWidth(theme, $width)};
+  width: ${({ $width }) => columnWidth($width)};
   align-items: center;
-  padding: ${({ theme }) => theme.space.buttonY}
-    ${({ theme }) => theme.space.tableX};
+  padding: 12px 40px;
   color: ${({ theme }) => theme.colors.text};
   font-weight: 500;
-  font-size: ${({ theme }) => theme.font.size.tableHeader};
+  font-size: 20px;
 `
 
 const Cell = styled.div<{ $width: ColumnWidth }>`
   display: flex;
-  width: ${({ theme, $width }) => columnWidth(theme, $width)};
+  width: ${({ $width }) => columnWidth($width)};
   align-items: center;
-  padding: ${({ theme }) => theme.space.buttonY}
-    ${({ theme }) => theme.space.tableX};
+  padding: 12px 40px;
 `
 
 const Pill = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: ${({ theme }) => theme.space.pillY}
-    ${({ theme }) => theme.space.buttonY};
-  border-radius: ${({ theme }) => theme.radius.pill};
+  padding: 6px 12px;
+  border-radius: 25px;
   background: ${({ theme }) => theme.colors.primaryBg};
   color: ${({ theme }) => theme.colors.primary};
-  font-size: ${({ theme }) => theme.font.size.category};
+  font-size: 18px;
   font-weight: 500;
   line-height: 1.2;
 `
 
 const TitleCell = styled(Cell)`
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.font.size.title};
+  font-size: 24px;
   font-weight: 500;
 `
 
 const DateCell = styled(Cell)`
   color: ${({ theme }) => theme.colors.textDate};
-  font-size: ${({ theme }) => theme.font.size.date};
+  font-size: 22px;
   font-weight: 500;
 `

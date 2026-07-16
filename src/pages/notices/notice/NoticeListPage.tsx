@@ -44,39 +44,37 @@ export function NoticeListPage() {
 }
 
 const Page = styled.main`
-  padding: ${({ theme }) => theme.space.xl};
+  padding: 32px;
   background: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
   font-family: ${({ theme }) => theme.font.body};
 `
 
 const Content = styled.div`
-  width: min(100%, ${({ theme }) => theme.layout.contentWidth});
+  width: min(100%, 1320px);
   margin: 0 auto;
-  padding-top: calc(
-    ${({ theme }) => theme.layout.noticeTop} - ${({ theme }) => theme.space.xl}
-  );
+  padding-top: calc(124px - 32px);
 `
 
 const Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  gap: ${({ theme }) => theme.space.lg};
+  gap: 24px;
 `
 
 const Title = styled.h1`
   margin: 0;
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.font.size.pageTitle};
+  font-size: 60px;
   font-weight: 600;
   line-height: 1.2;
 `
 
 const Subtitle = styled.p`
-  margin: ${({ theme }) => theme.space.buttonY} 0 0;
+  margin: 12px 0 0;
   color: ${({ theme }) => theme.colors.textSub};
-  font-size: ${({ theme }) => theme.font.size.subtitle};
+  font-size: 32px;
   font-weight: 500;
   line-height: 1.2;
 `

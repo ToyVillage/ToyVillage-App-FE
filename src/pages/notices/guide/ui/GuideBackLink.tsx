@@ -19,24 +19,23 @@ export function GuideBackLink({ className }: GuideBackLinkProps) {
 const BackLink = styled(Link)`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.space.md};
-  padding-left: ${({ theme }) => theme.layout.createBackInset};
+  gap: 16px;
+  padding-left: 6px;
   color: ${({ theme }) => theme.colors.textGuide};
-  font-size: ${({ theme }) => theme.font.size.title};
+  font-size: 24px;
   font-weight: 500;
   line-height: 1.2;
   text-decoration: none;
 
   &:focus-visible {
-    outline: ${({ theme }) => theme.radius.sm} solid
-      ${({ theme }) => theme.colors.primary};
-    outline-offset: ${({ theme }) => theme.space.xs};
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 4px;
   }
 `
 
 const BackIcon = styled.svg`
-  width: ${({ theme }) => theme.layout.createBackIconSize};
-  height: ${({ theme }) => theme.layout.createBackIconSize};
+  width: 24px;
+  height: 24px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;

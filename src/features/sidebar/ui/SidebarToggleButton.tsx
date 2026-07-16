@@ -33,15 +33,15 @@ export function SidebarToggleButton() {
 
 const Button = styled.button`
   position: fixed;
-  top: ${({ theme }) => theme.layout.menuY};
-  left: ${({ theme }) => theme.layout.menuX};
-  z-index: ${({ theme }) => theme.layout.sidebarZIndex - 1};
+  top: 32px;
+  left: 36px;
+  z-index: 19;
   display: inline-flex;
-  width: ${({ theme }) => theme.layout.menuSize};
-  height: ${({ theme }) => theme.layout.menuSize};
+  width: 36px;
+  height: 36px;
   flex-direction: column;
   justify-content: center;
-  gap: ${({ theme }) => theme.space.pillY};
+  gap: 6px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -52,7 +52,7 @@ const Button = styled.button`
 const Line = styled.span`
   display: block;
   width: 100%;
-  height: ${({ theme }) => theme.space.xs};
-  border-radius: ${({ theme }) => theme.radius.sm};
+  height: 4px;
+  border-radius: 4px;
   background: currentColor;
 `

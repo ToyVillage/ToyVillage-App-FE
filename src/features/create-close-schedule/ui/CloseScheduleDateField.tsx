@@ -56,23 +56,23 @@ function formatDate(value: string) {
 
 const Card = styled.div`
   display: flex;
-  width: ${({ theme }) => theme.layout.createDateWidth};
-  min-height: ${({ theme }) => theme.layout.createDateHeight};
+  width: 426px;
+  min-height: 184px;
   flex-direction: column;
   justify-content: center;
-  gap: ${({ theme }) => theme.layout.createDateLabelGap};
-  padding: ${({ theme }) => theme.space.tableX};
-  border-radius: ${({ theme }) => theme.radius.table};
+  gap: 7px;
+  padding: 40px;
+  border-radius: 20px;
   background: ${({ theme }) => theme.colors.surface};
 
-  @media (max-width: ${({ theme }) => theme.layout.createBreakpoint}) {
+  @media (max-width: 980px) {
     width: 100%;
   }
 `
 
 const Label = styled.label`
   color: ${({ theme }) => theme.colors.textStrong};
-  font-size: ${({ theme }) => theme.font.size.title};
+  font-size: 24px;
   font-weight: 500;
   line-height: 1.2;
 `
@@ -80,31 +80,30 @@ const Label = styled.label`
 const Field = styled.div`
   position: relative;
   display: flex;
-  min-height: ${({ theme }) => theme.layout.createFieldHeight};
+  min-height: 68px;
   align-items: center;
   justify-content: space-between;
-  padding: 0 ${({ theme }) => theme.space.lg};
-  border-radius: ${({ theme }) => theme.radius.md};
+  padding: 0 24px;
+  border-radius: 8px;
   background: ${({ theme }) => theme.colors.background};
 
   &:focus-within {
-    outline: ${({ theme }) => theme.radius.sm} solid
-      ${({ theme }) => theme.colors.primary};
-    outline-offset: ${({ theme }) => theme.space.xs};
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 4px;
   }
 `
 
 const DateText = styled.span<{ $empty: boolean }>`
   color: ${({ theme, $empty }) =>
     $empty ? theme.colors.textGuide : theme.colors.textStrong};
-  font-size: ${({ theme }) => theme.font.size.title};
+  font-size: 24px;
   font-weight: 500;
   line-height: 1.2;
 `
 
 const CalendarIcon = styled.svg`
-  width: ${({ theme }) => theme.layout.createCalendarIconSize};
-  height: ${({ theme }) => theme.layout.createCalendarIconSize};
+  width: 28px;
+  height: 28px;
   fill: ${({ theme }) => theme.colors.textStrong};
 `
 

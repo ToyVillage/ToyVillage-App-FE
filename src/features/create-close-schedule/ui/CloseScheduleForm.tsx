@@ -138,27 +138,27 @@ const Form = styled.form`
 
 const DateFields = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.layout.createDateGap};
+  gap: 20px;
 
-  @media (max-width: ${({ theme }) => theme.layout.createBreakpoint}) {
+  @media (max-width: 980px) {
     flex-direction: column;
   }
 `
 
 const TitleCard = styled.div`
   display: flex;
-  min-height: ${({ theme }) => theme.layout.createTitleHeight};
+  min-height: 164px;
   flex-direction: column;
-  gap: ${({ theme }) => theme.space.sm};
-  margin-top: ${({ theme }) => theme.layout.createSectionGap};
-  padding: ${({ theme }) => theme.space.tableX};
-  border-radius: ${({ theme }) => theme.radius.table};
+  gap: 8px;
+  margin-top: 32px;
+  padding: 40px;
+  border-radius: 20px;
   background: ${({ theme }) => theme.colors.surface};
 `
 
 const TitleLabel = styled.label`
   color: ${({ theme }) => theme.colors.textStrong};
-  font-size: ${({ theme }) => theme.font.size.title};
+  font-size: 24px;
   font-weight: 500;
   line-height: 1.2;
 `
@@ -175,7 +175,7 @@ const TitleInput = styled.input`
   background: transparent;
   color: ${({ theme }) => theme.colors.textStrong};
   font: inherit;
-  font-size: ${({ theme }) => theme.font.size.formInput};
+  font-size: 40px;
   font-weight: 500;
   line-height: 1.2;
 
@@ -188,20 +188,20 @@ const TitleInput = styled.input`
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: ${({ theme }) => theme.layout.createActionGap};
+  margin-top: 29px;
 `
 
 const SubmitButton = styled.button`
-  width: ${({ theme }) => theme.layout.createButtonWidth};
-  height: ${({ theme }) => theme.layout.createButtonHeight};
-  padding: 0 ${({ theme }) => theme.space.md};
+  width: 123px;
+  height: 61px;
+  padding: 0 16px;
   border: 0;
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: 8px;
   background: ${({ theme }) => theme.colors.text};
   color: ${({ theme }) => theme.colors.surface};
   cursor: pointer;
   font: inherit;
-  font-size: ${({ theme }) => theme.font.size.title};
+  font-size: 24px;
   font-weight: 600;
   line-height: 1.2;
 
@@ -211,15 +211,14 @@ const SubmitButton = styled.button`
   }
 
   &:focus-visible {
-    outline: ${({ theme }) => theme.radius.sm} solid
-      ${({ theme }) => theme.colors.primary};
-    outline-offset: ${({ theme }) => theme.space.xs};
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 4px;
   }
 `
 
 const Status = styled.p`
-  margin: ${({ theme }) => theme.space.sm} 0 0;
+  margin: 8px 0 0;
   color: ${({ theme }) => theme.colors.danger};
-  font-size: ${({ theme }) => theme.font.size.category};
+  font-size: 18px;
   text-align: right;
 `

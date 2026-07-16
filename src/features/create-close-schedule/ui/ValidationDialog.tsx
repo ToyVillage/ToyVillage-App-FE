@@ -58,33 +58,28 @@ export function ValidationDialog({
 
 const Overlay = styled.div`
   position: fixed;
-  z-index: ${({ theme }) => theme.layout.sidebarZIndex + 1};
+  z-index: 21;
   inset: 0;
   display: grid;
   place-items: center;
-  background: ${({ theme }) => theme.colors.overlayStrong};
+  background: rgba(0, 0, 0, 0.5);
 `
 
 const Dialog = styled.div`
   display: flex;
-  width: min(
-    calc(100% - ${({ theme }) => theme.space.tableX} * 2),
-    ${({ theme }) => theme.layout.createDialogWidth}
-  );
-  min-height: ${({ theme }) => theme.layout.createDialogHeight};
+  width: min(calc(100% - 40px * 2), 560px);
+  min-height: 320px;
   flex-direction: column;
   justify-content: space-between;
-  padding: ${({ theme }) => theme.space.tableX}
-    ${({ theme }) => theme.layout.createDialogInset}
-    ${({ theme }) => theme.layout.createDialogInset};
-  border-radius: ${({ theme }) => theme.radius.table};
+  padding: 40px 20px 20px;
+  border-radius: 20px;
   background: ${({ theme }) => theme.colors.surface};
 `
 
 const Message = styled.p`
-  margin: ${({ theme }) => theme.layout.createDialogMessageTop} 0 0;
+  margin: 53px 0 0;
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.font.size.dialog};
+  font-size: 28px;
   font-weight: 600;
   line-height: 1.2;
   text-align: center;
@@ -92,19 +87,18 @@ const Message = styled.p`
 
 const ConfirmButton = styled.button`
   width: 100%;
-  min-height: ${({ theme }) => theme.layout.createDialogButtonHeight};
+  min-height: 78px;
   border: 0;
-  border-radius: ${({ theme }) => theme.radius.lg};
+  border-radius: 16px;
   background: ${({ theme }) => theme.colors.text};
   color: ${({ theme }) => theme.colors.surface};
   cursor: pointer;
   font: inherit;
-  font-size: ${({ theme }) => theme.font.size.dialog};
+  font-size: 28px;
   font-weight: 500;
 
   &:focus-visible {
-    outline: ${({ theme }) => theme.radius.sm} solid
-      ${({ theme }) => theme.colors.primary};
-    outline-offset: ${({ theme }) => theme.space.xs};
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 4px;
   }
 `

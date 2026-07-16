@@ -10,13 +10,13 @@ export function HomePage() {
 }
 
 const Main = styled.main`
-  padding: ${({ theme }) => theme.space.xl};
+  padding: 32px;
   font-family: ${({ theme }) => theme.font.body};
 `
 
 const Title = styled.h1`
   color: ${({ theme }) => theme.colors.primary};
-  margin: 0 0 ${({ theme }) => theme.space.sm};
+  margin: 0 0 8px;
 `
 
 const Desc = styled.p`

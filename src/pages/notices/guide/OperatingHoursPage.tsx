@@ -42,27 +42,27 @@ function formatTitle(value: string) {
 
 const Page = styled.main`
   min-height: 100vh;
-  padding: 0 ${({ theme }) => theme.space.xl};
+  padding: 0 32px;
   background: ${({ theme }) => theme.colors.background};
   font-family: ${({ theme }) => theme.font.body};
 `
 
 const Content = styled.div`
-  width: min(100%, ${({ theme }) => theme.layout.contentWidth});
+  width: min(100%, 1320px);
   margin: 0 auto;
-  padding-top: ${({ theme }) => theme.layout.operatingTop};
+  padding-top: 76px;
 `
 
 const BackRow = styled.div`
   display: flex;
-  height: ${({ theme }) => theme.layout.operatingBackHeight};
+  height: 36px;
   align-items: center;
 `
 
 const Title = styled.h1`
-  margin: ${({ theme }) => theme.layout.operatingTitleGap} 0 0;
+  margin: 32px 0 0;
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.font.size.pageTitle};
+  font-size: 60px;
   font-weight: 600;
   line-height: 1.2;
 `

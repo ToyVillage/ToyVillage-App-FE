@@ -21,21 +21,20 @@ export function LinkButton({ to, children }: LinkButtonProps) {
 const Button = styled(Link)`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.space.sm};
-  padding: ${({ theme }) => theme.space.buttonY}
-    ${({ theme }) => theme.space.md};
+  gap: 8px;
+  padding: 12px 16px;
   background: ${({ theme }) => theme.colors.text};
   color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.round};
+  border-radius: 53px;
   text-decoration: none;
   font-weight: 600;
-  font-size: ${({ theme }) => theme.font.size.title};
+  font-size: 24px;
   line-height: 1.2;
 `
 
 const PlusIcon = styled.img`
-  width: ${({ theme }) => theme.layout.plusIcon};
-  height: ${({ theme }) => theme.layout.plusIcon};
-  flex: 0 0 ${({ theme }) => theme.layout.plusIcon};
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
   object-fit: none;
 `

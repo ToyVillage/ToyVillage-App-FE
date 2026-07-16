@@ -7,12 +7,12 @@
 
 ## 입력 (우선순위)
 1. `harness/specs/<feature>.spec.md` — **행동명세가 source of truth** (Figma만으로 판단 금지).
-2. 확정 토큰(개발자가 명명해 tokens.ts에 반영한 값) + `theme.ts`(`color→colors` 투영).
+2. 확정 의미 토큰(solid color/font family) + `theme.ts`(`color→colors` 투영).
 3. `harness/artifacts/<feature>.component-map.md` — 노드→컴포넌트 매핑.
 4. `get_figma_data` 구조/값(레이아웃·텍스트·간격) — 시각 참조.
 
 ## 규칙 (design-rules.md 전체 준수)
-- 스타일: Emotion + theme 토큰만(하드코딩 금지).
+- 스타일: Emotion. solid color/font family는 theme 의미 토큰을 쓰고, px·간격·radius·font-size·breakpoint·z-index·shadow·rgba는 해당 styled 블록에 직접 쓴다.
 - 서버 상태: TanStack Query(useEffect fetch 금지, Zustand 복제 금지). 클라 전역: Zustand.
 - API: `src/shared/api/axios.ts` 인스턴스. 이동: React Router. 타입 명시(`import type`).
 - 컴포넌트 경계: design-rules §7 (COMPONENT=경계, INSTANCE=재사용, frame/group/text=경계 아님). 과분리 금지.

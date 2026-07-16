@@ -31,26 +31,23 @@ export function CategoryTabs({
 const Tabs = styled.div`
   display: flex;
   width: 100%;
-  margin-top: ${({ theme }) => theme.layout.tabOffset};
+  margin-top: 32px;
 `
 
 const Tab = styled.button<{ $active: boolean }>`
   border: 0;
   border-bottom: ${({ $active, theme }) =>
-    $active
-      ? `${theme.space.xs} solid ${theme.colors.text}`
-      : `${theme.space.xs} solid transparent`};
+    $active ? `4px solid ${theme.colors.text}` : '4px solid transparent'};
   cursor: pointer;
-  padding: ${({ theme }) => theme.space.controlY}
-    ${({ theme }) => theme.space.tableX};
+  padding: 10px 40px;
   font-weight: 600;
-  font-size: ${({ theme }) => theme.font.size.date};
+  font-size: 22px;
   line-height: 1.2;
   background: transparent;
   color: ${({ theme, $active }) => ($active ? theme.colors.text : theme.colors.textMuted)};
 
   &[aria-pressed='false'] {
-    font-size: ${({ theme }) => theme.font.size.tableHeader};
+    font-size: 20px;
     font-weight: 500;
   }
 `

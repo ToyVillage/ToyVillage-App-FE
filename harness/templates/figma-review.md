@@ -6,14 +6,15 @@
 
 ## 체크리스트 (모두 확인해야 승인)
 - [ ] **Figma frame/node 일치** — 올바른 fileKey/nodeId를 추출했는가
-- [ ] **토큰/theme 매핑** — `artifacts/<feature>.token-diff.report.md`의 raw 후보에 시맨틱 이름을 부여했는가
+- [ ] **토큰/theme 매핑** — report의 solid color/font family 후보에만 시맨틱 이름을 부여했는가
       - 이 저장소는 Figma Variables가 없어 자동 명명 불가 → 아래 표에 개발자가 이름 지정
+- [ ] **직접 구현값 확인** — px·rgba·font size/weight·spacing·radius가 토큰 후보가 아니라 Emotion 직접값으로 분류됐는가
 - [ ] **component-map** — `artifacts/<feature>.component-map.md`의 노드→컴포넌트 매핑이 맞는가
 - [ ] **과분리 여부** — 새 컴포넌트 후보가 과하지 않은가(기존 재사용 우선)
 - [ ] **애매 항목 TODO** — 불확실한 값/동작이 TODO로 표시됐는가
 - [ ] **시나리오 승인** — `artifacts/<feature>.scenario-draft.md`의 시나리오(핵심~엣지)를 검토·가지치기했는가 (정적 퍼블리싱이면 생략)
 
-## 토큰 명명 (raw → 시맨틱)
+## 의미 토큰 명명 (solid color/font family만)
 | raw 값 | 제안 용도 | 확정 토큰 이름 | 기존 tokens.ts와 |
 |--------|-----------|----------------|------------------|
 | #FF8181 | 강조(핑크) | color.primary? | (new/conflict) |

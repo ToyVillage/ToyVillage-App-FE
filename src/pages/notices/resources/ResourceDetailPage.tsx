@@ -12,7 +12,7 @@ export function ResourceDetailPage() {
 }
 
 const Page = styled.main`
-  padding: ${({ theme }) => theme.space.xl};
+  padding: 32px;
   background: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
 `

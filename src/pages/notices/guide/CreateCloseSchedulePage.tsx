@@ -17,17 +17,17 @@ export function CreateCloseSchedulePage() {
 
 const Page = styled.main`
   min-height: 100vh;
-  padding: 0 ${({ theme }) => theme.space.xl};
+  padding: 0 32px;
   background: ${({ theme }) => theme.colors.background};
   font-family: ${({ theme }) => theme.font.body};
 `
 
 const Content = styled.div`
-  width: min(100%, ${({ theme }) => theme.layout.contentWidth});
+  width: min(100%, 1320px);
   margin: 0 auto;
-  padding-top: ${({ theme }) => theme.layout.createTop};
+  padding-top: 80px;
 `
 
 const BackRow = styled.div`
-  margin: 0 0 ${({ theme }) => theme.layout.createBackGap};
+  margin: 0 0 35px;
 `

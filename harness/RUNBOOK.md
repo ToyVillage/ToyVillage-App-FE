@@ -9,12 +9,12 @@
 - **Figma:** fileKey + nodeId (URL에서 추출). Figma MCP(`get_figma_data`/`download_figma_images`)로 접근.
 
 ## 0.0 스파이크 (파일별 최초 1회, blocking)
-`design-input-contract.md` §2 참조. `get_figma_data`가 Variables를 주는지 확인 — 이 저장소는 **미노출 확정** → 토큰은 raw 수집 + 개발자 명명.
+`design-input-contract.md` §2 참조. `get_figma_data`가 Variables를 주는지 확인 — 이 저장소는 **미노출 확정** → solid color/font family는 의미 토큰 후보, px·rgba 등은 직접 구현값으로 분리한다.
 
 ## 단계 (7)
 
 ### ① 추출 ‖ 시나리오 초안 (병렬)
-- **추출:** `get_figma_data(fileKey, nodeId)` 호출 → **응답을 `artifacts/<feature>.figma.txt`로 저장**(map-tokens의 입력). 그다음 `node scripts/map-tokens.mjs <feature>`로 raw 토큰 후보 + 기존 diff 생성 → `artifacts/<feature>.token-candidates.json`, `<feature>.token-diff.report.md`. 아이콘은 `download_figma_images`.
+- **추출:** `get_figma_data(fileKey, nodeId)` 호출 → **응답을 `artifacts/<feature>.figma.txt`로 저장**(map-tokens의 입력). 그다음 `node scripts/map-tokens.mjs <feature>`로 solid color/font family 토큰 후보와 px·rgba 등 direct CSS 값을 분리 → `artifacts/<feature>.token-candidates.json`, `<feature>.token-diff.report.md`. 아이콘은 `download_figma_images`.
   - MCP 불가 시: `design-input-contract.md` §5의 STOP-and-report(수동 토큰).
 - **시나리오 초안:** `requires_functional_test: true`면 `prompts/draft-scenarios.md`로 행동명세 → 시나리오 초안을 `templates/scenario-draft.md` 형식으로 **`artifacts/<feature>.scenario-draft.md`에 출력**(핵심→엣지). `false`면 생략.
 - **컴포넌트맵 초안:** `templates/component-map.md` 형식으로 Figma 노드 → repo 컴포넌트 매핑을 **`artifacts/<feature>.component-map.md`에 출력**.
@@ -40,7 +40,7 @@
 
 ### ③ 퍼블리싱 (AI)
 - `gate-check.mjs <feature>` **먼저** 통과(sentinel 존재) → 실패면 하드 STOP.
-- `prompts/publish.md` + `design-rules.md` + 확정 토큰 + 행동명세 기준으로 FSD-lite 컴포넌트 생성.
+- `prompts/publish.md` + `design-rules.md` + 확정 의미 토큰 + 행동명세 기준으로 FSD-lite 컴포넌트 생성. px·rgba 등 구현값은 Emotion에 직접 작성한다.
 - 기준은 **행동명세 프롬프트**(Figma만으로 판단 금지). 컴포넌트 경계는 design-rules §7.
 
 ### ④ 자동검증 (인너 루프)

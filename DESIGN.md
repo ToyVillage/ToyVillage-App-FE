@@ -2,8 +2,8 @@
 
 ## Source of truth
 
-- Status: Draft
-- Last refreshed: 2026-07-16
+- Status: Active
+- Last refreshed: 2026-07-17
 - Primary product surfaces: 토이빌리지 관리자 웹의 공지사항, 휴관일 관리, 자료실, 단체 예약 현황
 - Evidence reviewed:
   - `README.md`
@@ -16,6 +16,8 @@
   - Figma `2413:2955`, `2413:3046` 휴관일 생성 검증 오류 화면
   - `src/app/App.tsx`
   - `src/shared/theme/tokens.ts`
+  - `scripts/map-tokens.mjs`
+  - `scripts/check-style-policy.mjs`
   - `src/pages/notices/**`
   - `src/features/sidebar/**`
 
@@ -48,7 +50,7 @@
 - Primary navigation: 공지사항, 휴관일 관리, 자료실, 단체예약 현황
 - Core routes/screens:
   - `/notices/list`와 하위 생성·상세 화면
-  - `/notices/guide`와 `/notices/guide/create`
+  - `/notices/guide`, `/notices/guide/create`, `/notices/guide/hours/:date`
   - `/notices/resources`와 하위 생성·상세 화면
   - `/notices/reservations`
 - Content hierarchy: 페이지 제목과 설명 → 주요 액션 → 필터·탐색 → 데이터 또는 폼 → 상태 피드백
@@ -63,9 +65,9 @@
 ## Visual language
 
 - Color: `src/shared/theme/tokens.ts`의 배경, 표면, 텍스트, 핑크 강조 색을 사용한다. 오류·성공·경고 색은 토큰이 확정되기 전 컴포넌트에 하드코딩하지 않는다.
-- Typography: Wanted Sans와 시스템 폴백을 사용하고, 페이지 제목·부제·본문 위계를 기존 토큰으로 유지한다.
-- Spacing/layout rhythm: 공통 콘텐츠 최대 너비 1320px와 4/8/16/24/32px 계열의 기존 간격 토큰을 우선한다.
-- Shape/radius/elevation: 표면과 컨트롤은 기존 `radius` 토큰을 사용하며, 그림자는 정보 계층이나 오버레이 구분에 필요한 경우로 제한한다.
+- Typography: Wanted Sans와 시스템 폴백은 font family 토큰을 사용하고, 페이지 제목·부제·본문의 font-size/weight는 Figma와 기능별 spec 값을 Emotion에 직접 작성한다.
+- Spacing/layout rhythm: Figma와 기능별 spec의 값을 해당 Emotion 스타일에 직접 작성한다. 공통 콘텐츠 최대 너비 등 수치가 반복돼도 의미 토큰으로 승격하지 않는다.
+- Shape/radius/elevation: radius와 shadow는 해당 컴포넌트의 문맥값으로 직접 작성하며, 그림자는 정보 계층이나 오버레이 구분에 필요한 경우로 제한한다.
 - Motion: 상태 변화 이해에 필요한 짧은 전환만 사용하고, 저장이나 이동을 애니메이션으로 지연하지 않는다.
 - Imagery/iconography: 기존 SVG와 단순한 기능 아이콘을 사용하고, 아이콘 단독 버튼에는 접근 가능한 이름을 제공한다.
 
@@ -74,7 +76,7 @@
 - Existing components to reuse: `LinkButton`, `DataTable`, 사이드바, 기존 페이지 헤더와 테마 토큰
 - New/changed components: 기능별 spec에서 필요한 폼, 캘린더, 상태 피드백을 정의한다. 구조가 동일해질 때만 `shared/ui`로 승격한다.
 - Variants and states: 기본, hover, focus-visible, disabled, loading, error, success를 역할에 맞게 제공한다.
-- Token/component ownership: 원시 시각 값은 `src/shared/theme/tokens.ts`, 공통 표현은 `src/shared/ui`, 도메인 표현은 `entities`, 사용자 행동은 `features`, 화면 조합은 `pages`가 소유한다.
+- Token/component ownership: `tokens.ts`는 제품 의미가 있는 solid color와 공통 font family만 소유한다. px·rgba·spacing·radius·font-size·layout·shadow는 사용하는 Emotion 컴포넌트가 소유한다. 공통 표현은 `shared/ui`, 도메인 표현은 `entities`, 사용자 행동은 `features`, 화면 조합은 `pages`가 소유한다.
 
 ## Accessibility
 
@@ -108,10 +110,10 @@
 ## Implementation constraints
 
 - Framework/styling system: React, TypeScript, React Router, Emotion
-- Design-token constraints: 스타일 값은 theme 토큰만 사용하며, 새 값은 하네스의 토큰 검토 절차를 거쳐 추가한다.
+- Design-token constraints: solid color와 font family만 theme 의미 토큰을 사용한다. px·rgba·spacing·radius·font-size·breakpoint·z-index·shadow는 Emotion에 직접 쓰며 tokens.ts 추가를 금지한다. `yarn style-policy`가 이를 검사한다.
 - Performance constraints: 서버 상태는 TanStack Query, HTTP는 공통 Axios 인스턴스, 전역 UI 상태만 Zustand를 사용한다.
 - Compatibility constraints: 타입 전용 import와 FSD import 경계를 ESLint 계약에 맞춘다. 새 의존성은 추가하지 않는다.
-- Test/screenshot expectations: 변경한 행동은 Playwright로, 타입과 경계는 lint/typecheck/build로 검증한다. Figma 프레임이 있는 퍼블리싱은 하네스 승인 게이트를 따른다.
+- Test/screenshot expectations: 변경한 행동은 Playwright로, 타입·경계·토큰 정책은 lint/typecheck/style-policy/build로 검증한다. Figma 프레임이 있는 퍼블리싱은 하네스 승인 게이트를 따른다.
 
 ## Open questions
 

@@ -239,38 +239,36 @@ function formatShortDate(date: Date) {
 
 const Page = styled.main`
   min-height: 100vh;
-  padding: ${({ theme }) => theme.space.xl};
+  padding: 32px;
   background: ${({ theme }) => theme.colors.background};
   font-family: ${({ theme }) => theme.font.body};
 `
 
 const Content = styled.div`
-  width: min(100%, ${({ theme }) => theme.layout.contentWidth});
+  width: min(100%, 1320px);
   margin: 0 auto;
-  padding-top: calc(
-    ${({ theme }) => theme.layout.noticeTop} - ${({ theme }) => theme.space.xl}
-  );
+  padding-top: calc(124px - 32px);
 `
 
 const Header = styled.header`
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.space.lg};
+  gap: 24px;
 `
 
 const Title = styled.h1`
   margin: 0;
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.font.size.pageTitle};
+  font-size: 60px;
   font-weight: 600;
   line-height: 1.2;
 `
 
 const Subtitle = styled.p`
-  margin: ${({ theme }) => theme.space.buttonY} 0 0;
+  margin: 12px 0 0;
   color: ${({ theme }) => theme.colors.textSub};
-  font-size: ${({ theme }) => theme.font.size.subtitle};
+  font-size: 32px;
   font-weight: 500;
   line-height: 1.2;
 `
@@ -288,7 +286,7 @@ const MainGrid = styled.div`
 
 const CalendarSection = styled.section`
   overflow: hidden;
-  border-radius: ${({ theme }) => theme.radius.table};
+  border-radius: 20px;
 `
 
 const CalendarHeader = styled.div`
@@ -322,7 +320,7 @@ const ArrowIcon = styled.img<{ $left?: boolean }>`
 const MonthTitle = styled.h2`
   margin: 0;
   color: #36363f;
-  font-size: ${({ theme }) => theme.font.size.subtitle};
+  font-size: 32px;
   font-weight: 500;
   line-height: 1.2;
 `
@@ -339,7 +337,7 @@ const WeekCell = styled.div`
   align-items: center;
   justify-content: center;
   color: #36363f;
-  font-size: ${({ theme }) => theme.font.size.date};
+  font-size: 22px;
   font-weight: 500;
   line-height: 1.2;
 `
@@ -356,16 +354,15 @@ const DayCell = styled(Link)`
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  padding: ${({ theme }) => theme.space.buttonY};
+  padding: 12px;
   overflow: hidden;
   color: inherit;
   cursor: pointer;
   text-decoration: none;
 
   &:focus-visible {
-    outline: ${({ theme }) => theme.radius.sm} solid
-      ${({ theme }) => theme.colors.primary};
-    outline-offset: calc(-1 * ${({ theme }) => theme.space.xs});
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: calc(-1 * 4px);
   }
 
   @media (min-width: 1280px) {
@@ -403,7 +400,7 @@ const SearchBar = styled.div`
   display: flex;
   height: 50px;
   align-items: center;
-  gap: ${({ theme }) => theme.space.sm};
+  gap: 8px;
   padding: 12px 16px;
   border-radius: 44px;
   background: ${({ theme }) => theme.colors.surface};
@@ -443,10 +440,10 @@ const FilterIcon = styled.img`
 `
 
 const FilterNotice = styled.p`
-  margin: ${({ theme }) => theme.space.sm} 0 0;
-  padding: 0 ${({ theme }) => theme.space.md};
+  margin: 8px 0 0;
+  padding: 0 16px;
   color: #848491;
-  font-size: ${({ theme }) => theme.font.size.category};
+  font-size: 18px;
   font-weight: 500;
 `
 
@@ -454,7 +451,7 @@ const CardList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: ${({ theme }) => theme.space.lg};
+  margin-top: 24px;
 `
 
 const ScheduleCard = styled.article`
@@ -464,7 +461,7 @@ const ScheduleCard = styled.article`
   justify-content: center;
   gap: 10px;
   padding: 18px 40px;
-  border-radius: ${({ theme }) => theme.radius.table};
+  border-radius: 20px;
   background: ${({ theme }) => theme.colors.surface};
   color: #36363f;
 `
@@ -476,7 +473,7 @@ const CardDate = styled.strong`
 `
 
 const CardTitle = styled.span`
-  font-size: ${({ theme }) => theme.font.size.tableHeader};
+  font-size: 20px;
   font-weight: 500;
   line-height: 1.2;
 `
@@ -487,7 +484,7 @@ const EmptyState = styled.p`
   left: 50%;
   margin: 0;
   color: #afafba;
-  font-size: ${({ theme }) => theme.font.size.date};
+  font-size: 22px;
   font-weight: 500;
   line-height: 1.2;
   white-space: nowrap;

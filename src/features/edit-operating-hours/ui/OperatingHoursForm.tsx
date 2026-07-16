@@ -143,14 +143,14 @@ function toMinutes(value: string) {
 
 const Form = styled.form`
   width: 100%;
-  margin-top: ${({ theme }) => theme.layout.operatingFormGap};
+  margin-top: 32px;
 `
 
 const Fields = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.layout.operatingCardGap};
+  gap: 21px;
 
-  @media (max-width: ${({ theme }) => theme.layout.createBreakpoint}) {
+  @media (max-width: 980px) {
     flex-direction: column;
   }
 `
@@ -158,20 +158,20 @@ const Fields = styled.div`
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: ${({ theme }) => theme.layout.operatingFormGap};
+  margin-top: 32px;
 `
 
 const SaveButton = styled.button`
-  width: ${({ theme }) => theme.layout.createButtonWidth};
-  height: ${({ theme }) => theme.layout.createButtonHeight};
-  padding: 0 ${({ theme }) => theme.space.md};
+  width: 123px;
+  height: 61px;
+  padding: 0 16px;
   border: 0;
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: 8px;
   background: ${({ theme }) => theme.colors.text};
   color: ${({ theme }) => theme.colors.surface};
   cursor: pointer;
   font: inherit;
-  font-size: ${({ theme }) => theme.font.size.title};
+  font-size: 24px;
   font-weight: 600;
 
   &:disabled {
@@ -181,8 +181,8 @@ const SaveButton = styled.button`
 `
 
 const Status = styled.p`
-  margin: ${({ theme }) => theme.space.sm} 0 0;
+  margin: 8px 0 0;
   color: ${({ theme }) => theme.colors.danger};
-  font-size: ${({ theme }) => theme.font.size.category};
+  font-size: 18px;
   text-align: right;
 `

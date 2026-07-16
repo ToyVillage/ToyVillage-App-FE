@@ -77,23 +77,23 @@ export function OperatingTimeField({
 
 const Card = styled.div`
   display: flex;
-  width: ${({ theme }) => theme.layout.createDateWidth};
+  width: 426px;
   min-width: 0;
-  min-height: ${({ theme }) => theme.layout.createDateHeight};
+  min-height: 184px;
   flex-direction: column;
-  gap: ${({ theme }) => theme.space.buttonY};
-  padding: ${({ theme }) => theme.space.tableX};
-  border-radius: ${({ theme }) => theme.radius.table};
+  gap: 12px;
+  padding: 40px;
+  border-radius: 20px;
   background: ${({ theme }) => theme.colors.surface};
 
-  @media (max-width: ${({ theme }) => theme.layout.createBreakpoint}) {
+  @media (max-width: 980px) {
     width: 100%;
   }
 `
 
 const Label = styled.div`
   color: ${({ theme }) => theme.colors.textStrong};
-  font-size: ${({ theme }) => theme.font.size.tableHeader};
+  font-size: 20px;
   font-weight: 500;
   line-height: 1.2;
   text-decoration: underline;
@@ -101,43 +101,42 @@ const Label = styled.div`
 
 const TimeRow = styled.div`
   display: flex;
-  width: ${({ theme }) => theme.layout.operatingTimeRowWidth};
+  width: 346px;
   max-width: 100%;
-  gap: ${({ theme }) => theme.space.buttonY};
+  gap: 12px;
 `
 
 const TimeInput = styled.input`
   width: 0;
   min-width: 0;
-  height: ${({ theme }) => theme.layout.createFieldHeight};
+  height: 68px;
   flex: 1 1 0;
   padding: 0;
   border: 0;
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: 8px;
   outline: 0;
   background: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.text};
   font: inherit;
-  font-size: ${({ theme }) => theme.font.size.subtitle};
+  font-size: 32px;
   font-weight: 500;
   line-height: 1.2;
   text-align: center;
 
   &:focus-visible {
-    outline: ${({ theme }) => theme.radius.sm} solid
-      ${({ theme }) => theme.colors.primary};
-    outline-offset: ${({ theme }) => theme.space.xs};
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 4px;
   }
 `
 
 const PeriodGroup = styled.div`
   display: flex;
-  width: ${({ theme }) => theme.layout.operatingPeriodWidth};
-  height: ${({ theme }) => theme.layout.createFieldHeight};
-  flex: 0 0 ${({ theme }) => theme.layout.operatingPeriodWidth};
+  width: 56px;
+  height: 68px;
+  flex: 0 0 56px;
   flex-direction: column;
   overflow: hidden;
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: 8px;
   background: ${({ theme }) => theme.colors.background};
 `
 
@@ -154,13 +153,12 @@ const PeriodButton = styled.button<{ $selected: boolean }>`
     $selected ? theme.colors.text : theme.colors.textFaint};
   cursor: pointer;
   font: inherit;
-  font-size: ${({ theme }) => theme.font.size.category};
+  font-size: 18px;
   font-weight: 500;
   line-height: 1;
 
   &:focus-visible {
-    outline: ${({ theme }) => theme.radius.sm} solid
-      ${({ theme }) => theme.colors.primary};
-    outline-offset: calc(-1 * ${({ theme }) => theme.space.xs});
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: calc(-1 * 4px);
   }
 `
