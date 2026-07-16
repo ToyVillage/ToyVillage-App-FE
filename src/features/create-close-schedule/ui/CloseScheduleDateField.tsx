@@ -91,6 +91,15 @@ const Field = styled.div`
     outline: 4px solid ${({ theme }) => theme.colors.primary};
     outline-offset: 4px;
   }
+
+  &:focus-within > span,
+  &:focus-within > svg {
+    visibility: hidden;
+  }
+
+  &:focus-within > input {
+    opacity: 1;
+  }
 `
 
 const DateText = styled.span<{ $empty: boolean }>`
@@ -112,6 +121,16 @@ const NativeInput = styled.input`
   inset: 0;
   width: 100%;
   height: 100%;
+  padding: 0 24px;
+  border: 0;
+  border-radius: inherit;
+  outline: 0;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.textStrong};
   cursor: pointer;
+  font: inherit;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
   opacity: 0;
 `

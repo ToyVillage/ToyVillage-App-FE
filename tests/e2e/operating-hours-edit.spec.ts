@@ -131,6 +131,21 @@ test('S7: 저장 실패 → 입력값과 페이지 유지', async ({ page }) => 
   await expect(page.getByRole('button', { name: '저장하기' })).toBeEnabled()
 })
 
+test('S8: 시간 입력에서 Enter로 저장', async ({ page }) => {
+  await page.goto(`/notices/guide/hours/${date}`)
+  await setOpeningTime(page, '08', '15', '오전')
+  await setClosingTime(page, '06', '30', '오후')
+
+  await page.getByLabel('영업 종료 분').press('Enter')
+
+  await expect(page).toHaveURL('/notices/guide')
+  await page.goto(`/notices/guide/hours/${date}`)
+  await expect(page.getByLabel('영업 시작 시')).toHaveValue('08')
+  await expect(page.getByLabel('영업 시작 분')).toHaveValue('15')
+  await expect(page.getByLabel('영업 종료 시')).toHaveValue('06')
+  await expect(page.getByLabel('영업 종료 분')).toHaveValue('30')
+})
+
 async function setOpeningTime(
   page: import('@playwright/test').Page,
   hour: string,

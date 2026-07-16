@@ -17,6 +17,26 @@ test('날짜 입력 영역 클릭 시 브라우저 선택기를 연다', async (
     .toBe('1')
 })
 
+test('날짜 입력에 키보드 포커스 시 네이티브 편집 피드백을 표시한다', async ({
+  page,
+}) => {
+  await page.goto('/notices/guide/create')
+  const startDateInput = page.getByLabel('시작일')
+
+  await startDateInput.focus()
+
+  await expect(startDateInput).toBeFocused()
+  await expect(startDateInput).toHaveCSS('opacity', '1')
+  await expect(page.getByText('연도. 월. 일').first()).toHaveCSS(
+    'visibility',
+    'hidden',
+  )
+
+  await page.getByLabel(/제목/).focus()
+
+  await expect(startDateInput).toHaveCSS('opacity', '0')
+})
+
 test('제목 입력에 포커스해도 하단 라인을 표시하지 않는다', async ({ page }) => {
   await page.goto('/notices/guide/create')
   const titleInput = page.getByLabel(/제목/)

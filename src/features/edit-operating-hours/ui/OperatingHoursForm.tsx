@@ -78,8 +78,22 @@ function OperatingHoursEditor({ initialHours }: OperatingHoursEditorProps) {
     )
   }
 
+  function handleEnterSubmit(event: React.KeyboardEvent<HTMLFormElement>) {
+    if (
+      event.key !== 'Enter' ||
+      event.nativeEvent.isComposing ||
+      event.target instanceof HTMLButtonElement ||
+      mutation.isPending
+    ) {
+      return
+    }
+
+    event.preventDefault()
+    event.currentTarget.requestSubmit()
+  }
+
   return (
-    <Form onSubmit={handleSubmit} noValidate>
+    <Form onSubmit={handleSubmit} onKeyDown={handleEnterSubmit} noValidate>
       <Fields>
         <OperatingTimeField
           label="영업 시작"
