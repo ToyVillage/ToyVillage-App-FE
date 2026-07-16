@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
+import { useQuery } from '@tanstack/react-query'
 import {
+  getMockCloseSchedules,
   mockCloseSchedules,
   type CloseSchedule,
 } from '@/entities/close-schedule'
@@ -22,10 +24,15 @@ export function NoticeGuidePage() {
   const [month, setMonth] = useState(() => startOfMonth(new Date()))
   const [query, setQuery] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
+  const { data: schedules = mockCloseSchedules } = useQuery({
+    queryKey: ['close-schedules'],
+    queryFn: getMockCloseSchedules,
+    placeholderData: mockCloseSchedules,
+  })
 
   const monthSchedules = useMemo(
-    () => filterSchedulesByMonth(mockCloseSchedules, month),
-    [month],
+    () => filterSchedulesByMonth(schedules, month),
+    [month, schedules],
   )
   const filteredSchedules = useMemo(
     () => filterSchedulesByQuery(monthSchedules, query),

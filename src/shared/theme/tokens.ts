@@ -6,7 +6,9 @@ export const tokens = {
     primary: '#FF8181', // 핑크 강조 (활성 탭/포인트)
     primaryBg: '#FFDDDD', // 핑크 배경 (활성 pill)
     text: '#000000',
+    textStrong: '#36363F',
     textSub: '#838383', // 부제목
+    textGuide: '#848491',
     textMuted: '#7C7C7C', // 비활성 탭
     textDate: '#747474',
     background: '#F5F5F7', // 페이지 배경
@@ -17,6 +19,8 @@ export const tokens = {
     avatar: '#D9D9D9',
     iconMuted: '#858585',
     overlay: 'rgba(0, 0, 0, 0.24)',
+    overlayStrong: 'rgba(0, 0, 0, 0.5)',
+    danger: '#FF3131',
   },
   space: {
     xs: '4px',
@@ -45,6 +49,8 @@ export const tokens = {
       tableHeader: '20px',
       date: '22px',
       title: '24px',
+      dialog: '28px',
+      formInput: '40px',
       sidebarUser: '26px',
       subtitle: '32px',
       pageTitle: '60px',
@@ -52,6 +58,27 @@ export const tokens = {
   },
   layout: {
     contentWidth: '1320px',
+    createTop: '80px',
+    createBackIconSize: '24px',
+    createBackInset: '6px',
+    createBackGap: '35px',
+    createDateWidth: '426px',
+    createDateHeight: '184px',
+    createDateGap: '20px',
+    createDateLabelGap: '7px',
+    createFieldHeight: '68px',
+    createTitleHeight: '164px',
+    createSectionGap: '32px',
+    createActionGap: '29px',
+    createButtonHeight: '61px',
+    createButtonWidth: '123px',
+    createCalendarIconSize: '28px',
+    createDialogWidth: '560px',
+    createDialogHeight: '320px',
+    createDialogInset: '20px',
+    createDialogButtonHeight: '78px',
+    createDialogMessageTop: '53px',
+    createBreakpoint: '980px',
     noticeTop: '124px',
     menuX: '36px',
     menuY: '32px',

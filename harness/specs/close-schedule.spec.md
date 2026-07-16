@@ -19,7 +19,7 @@ paths: src/pages/notices/guide, src/features/create-close-schedule, src/entities
 ## 라우트
 
 - `/notices/guide` → 휴관 일정 관리 페이지
-- `/notices/guide/create` → 휴관 일정 등록 페이지 또는 등록 폼 스텁
+- `/notices/guide/create` → 휴관일 생성 페이지. 상세 행동은 `close-schedule-create.spec.md`를 따른다.
 
 ## 동작 (source of truth)
 
@@ -70,4 +70,4 @@ paths: src/pages/notices/guide, src/features/create-close-schedule, src/entities
 - Figma 기준 화면은 `nodeId: 1596:450`(목록 있음), `relatedNodeIds: 2413:2838`(빈 상태)이다.
 - Figma 색상 후보: 배경 `#F5F5F7`, 본문/버튼 `#36363F`, 보조 텍스트 `#848491`, 요일 헤더 `#DDDDE3`, 빈 상태 텍스트 `#AFAFBA`, 휴관 마커 `#FF7D7D`.
 - Figma에는 삭제 진입점이 없으므로 삭제 기능은 이번 스펙 범위에서 제외한다. 삭제가 필요하면 별도 디자인/기획 확정 후 추가한다.
-- 실제 등록 폼의 필드 검증(날짜 중복, 과거 날짜 허용 여부, 사유 필수 여부)은 API/기획 확정 후 보강한다.
+- 등록 폼의 필드, 검증과 저장 후 이동은 `close-schedule-create.spec.md`를 따른다.

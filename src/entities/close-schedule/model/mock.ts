@@ -1,4 +1,6 @@
-import type { CloseSchedule } from './types'
+import type { CloseSchedule, CreateCloseScheduleInput } from './types'
+
+export const closeScheduleStorageKey = 'toyvillage:close-schedules'
 
 export const mockCloseSchedules: CloseSchedule[] = [
   {
@@ -32,3 +34,48 @@ export const mockCloseSchedules: CloseSchedule[] = [
     title: '이다연 생일',
   },
 ]
+
+export async function getMockCloseSchedules(): Promise<CloseSchedule[]> {
+  return [...mockCloseSchedules, ...readCreatedSchedules()]
+}
+
+export async function createMockCloseSchedule(
+  input: CreateCloseScheduleInput,
+): Promise<CloseSchedule> {
+  const schedule = {
+    id: `created-${crypto.randomUUID()}`,
+    ...input,
+  }
+  const schedules = readCreatedSchedules()
+
+  localStorage.setItem(
+    closeScheduleStorageKey,
+    JSON.stringify([...schedules, schedule]),
+  )
+
+  return schedule
+}
+
+function readCreatedSchedules(): CloseSchedule[] {
+  const rawSchedules = localStorage.getItem(closeScheduleStorageKey)
+  if (!rawSchedules) return []
+
+  try {
+    const schedules: unknown = JSON.parse(rawSchedules)
+    return Array.isArray(schedules) ? schedules.filter(isCloseSchedule) : []
+  } catch {
+    return []
+  }
+}
+
+function isCloseSchedule(value: unknown): value is CloseSchedule {
+  if (!value || typeof value !== 'object') return false
+
+  const schedule = value as Record<string, unknown>
+  return (
+    typeof schedule.id === 'string' &&
+    typeof schedule.startDate === 'string' &&
+    typeof schedule.endDate === 'string' &&
+    typeof schedule.title === 'string'
+  )
+}

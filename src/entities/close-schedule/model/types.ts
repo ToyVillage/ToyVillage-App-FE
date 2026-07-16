@@ -4,3 +4,5 @@ export interface CloseSchedule {
   endDate: string
   title: string
 }
+
+export type CreateCloseScheduleInput = Omit<CloseSchedule, 'id'>
