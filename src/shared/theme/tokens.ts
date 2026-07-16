@@ -9,6 +9,7 @@ export const tokens = {
     textStrong: '#36363F',
     textSub: '#838383', // 부제목
     textGuide: '#848491',
+    textFaint: '#AFAFBA',
     textMuted: '#7C7C7C', // 비활성 탭
     textDate: '#747474',
     background: '#F5F5F7', // 페이지 배경
@@ -79,6 +80,13 @@ export const tokens = {
     createDialogButtonHeight: '78px',
     createDialogMessageTop: '53px',
     createBreakpoint: '980px',
+    operatingTop: '76px',
+    operatingBackHeight: '36px',
+    operatingTitleGap: '32px',
+    operatingFormGap: '32px',
+    operatingCardGap: '21px',
+    operatingTimeRowWidth: '346px',
+    operatingPeriodWidth: '56px',
     noticeTop: '124px',
     menuX: '36px',
     menuY: '32px',

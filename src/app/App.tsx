@@ -13,6 +13,7 @@ import {
 import {
   CreateCloseSchedulePage,
   NoticeGuidePage,
+  OperatingHoursPage,
 } from '@/pages/notices/guide'
 import { NoticeReservationsPage } from '@/pages/notices/reservations'
 import { Sidebar, SidebarToggleButton } from '@/features/sidebar'
@@ -36,6 +37,10 @@ export function App() {
         <Route
           path="/notices/guide/create"
           element={<CreateCloseSchedulePage />}
+        />
+        <Route
+          path="/notices/guide/hours/:date"
+          element={<OperatingHoursPage />}
         />
         <Route path="/notices/resources" element={<ResourceListPage />} />
         <Route

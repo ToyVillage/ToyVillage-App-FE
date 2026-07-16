@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import {
   getMockCloseSchedules,
   mockCloseSchedules,
@@ -84,6 +85,7 @@ export function NoticeGuidePage() {
               {calendarDays.map((day) => (
                 <DayCell
                   key={day.key}
+                  to={`/notices/guide/hours/${day.key}`}
                   aria-label={`${formatFullDate(day.date)}${
                     day.schedules.length > 0 ? ' 휴관 일정 있음' : ''
                   }`}
@@ -348,7 +350,7 @@ const CalendarGrid = styled.div`
   background: ${({ theme }) => theme.colors.surface};
 `
 
-const DayCell = styled.div`
+const DayCell = styled(Link)`
   display: flex;
   min-height: 112px;
   flex-direction: column;
@@ -356,6 +358,15 @@ const DayCell = styled.div`
   gap: 10px;
   padding: ${({ theme }) => theme.space.buttonY};
   overflow: hidden;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: ${({ theme }) => theme.radius.sm} solid
+      ${({ theme }) => theme.colors.primary};
+    outline-offset: calc(-1 * ${({ theme }) => theme.space.xs});
+  }
 
   @media (min-width: 1280px) {
     min-height: 152px;

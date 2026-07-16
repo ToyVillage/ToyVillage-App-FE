@@ -1,17 +1,14 @@
 import styled from '@emotion/styled'
-import { Link } from 'react-router-dom'
 import { CloseScheduleForm } from '@/features/create-close-schedule'
+import { GuideBackLink } from './ui/GuideBackLink'
 
 export function CreateCloseSchedulePage() {
   return (
     <Page>
       <Content>
-        <BackLink to="/notices/guide">
-          <BackIcon viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m15 4-8 8 8 8" />
-          </BackIcon>
-          뒤로가기
-        </BackLink>
+        <BackRow>
+          <GuideBackLink />
+        </BackRow>
         <CloseScheduleForm />
       </Content>
     </Page>
@@ -31,31 +28,6 @@ const Content = styled.div`
   padding-top: ${({ theme }) => theme.layout.createTop};
 `
 
-const BackLink = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.space.md};
+const BackRow = styled.div`
   margin: 0 0 ${({ theme }) => theme.layout.createBackGap};
-  padding-left: ${({ theme }) => theme.layout.createBackInset};
-  color: ${({ theme }) => theme.colors.textGuide};
-  font-size: ${({ theme }) => theme.font.size.title};
-  font-weight: 500;
-  line-height: 1.2;
-  text-decoration: none;
-
-  &:focus-visible {
-    outline: ${({ theme }) => theme.radius.sm} solid
-      ${({ theme }) => theme.colors.primary};
-    outline-offset: ${({ theme }) => theme.space.xs};
-  }
-`
-
-const BackIcon = styled.svg`
-  width: ${({ theme }) => theme.layout.createBackIconSize};
-  height: ${({ theme }) => theme.layout.createBackIconSize};
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3;
 `

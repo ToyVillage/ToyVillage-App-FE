@@ -1,0 +1,16 @@
+{
+  "feature": "operating-hours-edit",
+  "approvedAt": "2026-07-16T15:47:10.400Z",
+  "approvedBy": "user",
+  "scenarioIds": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7"
+  ],
+  "scenarioHash": "e9be81cabc2c0edd2d29a7d9e3cd042bc0292a0e96adea2dbd4150d17920b768",
+  "e2eHash": "293a3eb5ce3bb84adbd2a533f9b9fde1df5e3cca3d77a12eacb30f9ba9f802ea"
+}
