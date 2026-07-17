@@ -15,6 +15,24 @@ export const mockNotices: Notice[] = [
     title: '주차장 이용 변경 공지',
     date: '2026.06.25',
   },
+  {
+    id: '4',
+    category: '팀이름 3',
+    title: '여름 단축 운영 안내',
+    date: '2026.06.22',
+  },
+  {
+    id: '5',
+    category: '전체',
+    title: '시설 점검 일정 공지',
+    date: '2026.06.19',
+  },
+  {
+    id: '6',
+    category: '팀이름 1',
+    title: '회원 혜택 개편 안내',
+    date: '2026.06.16',
+  },
 ]
 
 export const noticeCategories = ['전체', '팀이름 1', '팀이름 2', '팀이름 3']

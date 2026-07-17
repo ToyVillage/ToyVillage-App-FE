@@ -5,21 +5,54 @@ import {
   ResourceTable,
   mockResources,
   fileTypeTabs,
+  fileTypeLabel,
   tabToFileType,
 } from '@/entities/resource'
 import { CreateResourceButton } from '@/features/create-resource'
 import { FileTypeTabs } from './ui/FileTypeTabs'
 
+// 한 페이지에 노출할 자료 수(Figma list 컴포넌트 기준). 공지와 동일.
+const PAGE_SIZE = 4
+
 export function ResourceListPage() {
   const navigate = useNavigate()
   const [active, setActive] = useState('전체')
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
 
-  const resources = useMemo(() => {
+  const filtered = useMemo(() => {
     const type = tabToFileType[active]
-    return type === null || type === undefined
-      ? mockResources
-      : mockResources.filter((r) => r.fileType === type)
-  }, [active])
+    const byType =
+      type === null || type === undefined
+        ? mockResources
+        : mockResources.filter((r) => r.fileType === type)
+
+    const keyword = query.trim().toLowerCase()
+    if (!keyword) return byType
+
+    return byType.filter((r) =>
+      `${r.title} ${fileTypeLabel[r.fileType]} ${r.date}`
+        .toLowerCase()
+        .includes(keyword),
+    )
+  }, [active, query])
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+
+  // 탭·검색이 바뀌면 첫 페이지로 되돌린다. 렌더 중 상태 보정(effect 불필요).
+  const filterKey = `${active} ${query}`
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey)
+  if (prevFilterKey !== filterKey) {
+    setPrevFilterKey(filterKey)
+    setPage(1)
+  }
+  const currentPage = Math.min(page, pageCount)
+
+  const resources = useMemo(
+    () =>
+      filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [filtered, currentPage],
+  )
 
   return (
     <Page>
@@ -41,6 +74,16 @@ export function ResourceListPage() {
         <ResourceTable
           resources={resources}
           onRowClick={(id) => navigate(`/notices/resources/${id}`)}
+          search={{
+            value: query,
+            onChange: setQuery,
+            placeholder: '제목을 입력해주세요',
+            ariaLabel: '자료 검색',
+          }}
+          pagination={{ page: currentPage, pageCount, onChange: setPage }}
+          emptyLabel={
+            query.trim() ? '검색결과가 없습니다' : '표시할 자료가 없습니다'
+          }
         />
       </Content>
     </Page>
