@@ -6,3 +6,5 @@ export interface CloseSchedule {
 }
 
 export type CreateCloseScheduleInput = Omit<CloseSchedule, 'id'>
+
+export type UpdateCloseScheduleInput = CloseSchedule

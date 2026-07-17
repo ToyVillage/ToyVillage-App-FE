@@ -7,13 +7,14 @@ interface CloseScheduleDateFieldProps {
   value: string
   onChange: (value: string) => void
   onTabForward: () => void
+  onTabBackward?: () => void
 }
 
 export const CloseScheduleDateField = forwardRef<
   HTMLInputElement,
   CloseScheduleDateFieldProps
 >(function CloseScheduleDateField(
-  { id, label, value, onChange, onTabForward },
+  { id, label, value, onChange, onTabForward, onTabBackward },
   ref,
 ) {
   return (
@@ -38,10 +39,17 @@ export const CloseScheduleDateField = forwardRef<
             }
           }}
           onKeyDown={(event) => {
-            if (event.key === 'Tab' && !event.shiftKey) {
+            if (event.key !== 'Tab') return
+
+            if (event.shiftKey) {
+              if (!onTabBackward) return
               event.preventDefault()
-              onTabForward()
+              onTabBackward()
+              return
             }
+
+            event.preventDefault()
+            onTabForward()
           }}
         />
       </Field>

@@ -2,8 +2,15 @@ import { useCallback, useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { createMockCloseSchedule } from '@/entities/close-schedule'
+import {
+  createMockCloseSchedule,
+  deleteMockCloseSchedule,
+  updateMockCloseSchedule,
+  type CloseSchedule,
+  type CreateCloseScheduleInput,
+} from '@/entities/close-schedule'
 import { CloseScheduleDateField } from './CloseScheduleDateField'
+import { DeleteConfirmationDialog } from './DeleteConfirmationDialog'
 import { ValidationDialog } from './ValidationDialog'
 
 type ValidationError = 'date' | 'title' | 'range'
@@ -14,18 +21,37 @@ const validationMessages: Record<ValidationError, string> = {
   range: '종료일은 시작일과 같거나 이후여야 합니다',
 }
 
-export function CloseScheduleForm() {
+interface CloseScheduleFormProps {
+  initialSchedule?: CloseSchedule
+}
+
+export function CloseScheduleForm({ initialSchedule }: CloseScheduleFormProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const submittingRef = useRef(false)
+  const deletingRef = useRef(false)
   const startDateRef = useRef<HTMLInputElement>(null)
   const endDateRef = useRef<HTMLInputElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
-  const [title, setTitle] = useState('')
+  const deleteButtonRef = useRef<HTMLButtonElement>(null)
+  const [startDate, setStartDate] = useState(
+    () => initialSchedule?.startDate ?? '',
+  )
+  const [endDate, setEndDate] = useState(() => initialSchedule?.endDate ?? '')
+  const [title, setTitle] = useState(() => initialSchedule?.title ?? '')
   const [validationError, setValidationError] =
     useState<ValidationError | null>(null)
-  const mutation = useMutation({ mutationFn: createMockCloseSchedule })
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteError, setDeleteError] = useState(false)
+  const mutation = useMutation({
+    mutationFn: (input: CreateCloseScheduleInput) =>
+      initialSchedule
+        ? updateMockCloseSchedule({ id: initialSchedule.id, ...input })
+        : createMockCloseSchedule(input),
+  })
+  const isEditing = Boolean(initialSchedule)
+  const deleteMutation = useMutation({ mutationFn: deleteMockCloseSchedule })
+  const isPending = mutation.isPending || deleteMutation.isPending
 
   const handleConfirm = useCallback(() => {
     const error = validationError
@@ -46,8 +72,34 @@ export function CloseScheduleForm() {
     })
   }, [startDate, validationError])
 
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteDialogOpen(false)
+    requestAnimationFrame(() => deleteButtonRef.current?.focus())
+  }, [])
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (!initialSchedule || deletingRef.current) return
+
+    deletingRef.current = true
+    deleteMutation.mutate(initialSchedule.id, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ['close-schedules'] })
+        navigate('/notices/guide')
+      },
+      onError: () => {
+        deletingRef.current = false
+        setDeleteError(true)
+        setDeleteDialogOpen(false)
+        requestAnimationFrame(() => deleteButtonRef.current?.focus())
+      },
+    })
+  }, [deleteMutation, initialSchedule, navigate, queryClient])
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submittingRef.current) return
+    setDeleteError(false)
+
     if (!startDate || !endDate) {
       setValidationError('date')
       return
@@ -64,6 +116,7 @@ export function CloseScheduleForm() {
       return
     }
 
+    submittingRef.current = true
     mutation.mutate(
       { startDate, endDate, title: normalizedTitle },
       {
@@ -72,6 +125,9 @@ export function CloseScheduleForm() {
             queryKey: ['close-schedules'],
           })
           navigate('/notices/guide')
+        },
+        onError: () => {
+          submittingRef.current = false
         },
       },
     )
@@ -95,6 +151,7 @@ export function CloseScheduleForm() {
           value={endDate}
           onChange={setEndDate}
           onTabForward={() => titleRef.current?.focus()}
+          onTabBackward={() => startDateRef.current?.focus()}
         />
       </DateFields>
 
@@ -113,19 +170,55 @@ export function CloseScheduleForm() {
       </TitleCard>
 
       <Actions>
-        <SubmitButton type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? '생성 중' : '생성하기'}
+        {isEditing && (
+          <DeleteButton
+            ref={deleteButtonRef}
+            type="button"
+            disabled={isPending}
+            onClick={() => {
+              mutation.reset()
+              setDeleteError(false)
+              setDeleteDialogOpen(true)
+            }}
+          >
+            삭제하기
+          </DeleteButton>
+        )}
+        <SubmitButton type="submit" disabled={isPending}>
+          {mutation.isPending
+            ? isEditing
+              ? '수정 중'
+              : '생성 중'
+            : isEditing
+              ? '수정하기'
+              : '생성하기'}
         </SubmitButton>
       </Actions>
 
       {mutation.isError && (
-        <Status role="status">생성하지 못했습니다. 다시 시도해 주세요.</Status>
+        <Status role="status">
+          {isEditing
+            ? '수정하지 못했습니다. 다시 시도해 주세요.'
+            : '생성하지 못했습니다. 다시 시도해 주세요.'}
+        </Status>
+      )}
+
+      {deleteError && (
+        <Status role="status">삭제하지 못했습니다. 다시 시도해 주세요.</Status>
       )}
 
       {validationError && (
         <ValidationDialog
           message={validationMessages[validationError]}
           onConfirm={handleConfirm}
+        />
+      )}
+
+      {deleteDialogOpen && (
+        <DeleteConfirmationDialog
+          pending={deleteMutation.isPending}
+          onCancel={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
         />
       )}
     </Form>
@@ -154,6 +247,11 @@ const TitleCard = styled.div`
   padding: 40px;
   border-radius: 20px;
   background: ${({ theme }) => theme.colors.surface};
+
+  &:focus-within {
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 4px;
+  }
 `
 
 const TitleLabel = styled.label`
@@ -187,6 +285,7 @@ const TitleInput = styled.input`
 
 const Actions = styled.div`
   display: flex;
+  gap: 12px;
   justify-content: flex-end;
   margin-top: 29px;
 `
@@ -214,6 +313,12 @@ const SubmitButton = styled.button`
     outline: 4px solid ${({ theme }) => theme.colors.primary};
     outline-offset: 4px;
   }
+`
+
+const DeleteButton = styled(SubmitButton)`
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.danger};
+  border: 1px solid ${({ theme }) => theme.colors.danger};
 `
 
 const Status = styled.p`

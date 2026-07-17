@@ -1,7 +1,14 @@
 export {
   closeScheduleStorageKey,
   createMockCloseSchedule,
+  deleteMockCloseSchedule,
+  getMockCloseSchedule,
   getMockCloseSchedules,
   mockCloseSchedules,
+  updateMockCloseSchedule,
 } from './model/mock'
-export type { CloseSchedule, CreateCloseScheduleInput } from './model/types'
+export type {
+  CloseSchedule,
+  CreateCloseScheduleInput,
+  UpdateCloseScheduleInput,
+} from './model/types'

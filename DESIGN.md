@@ -11,9 +11,13 @@
   - `harness/specs/notice-list.spec.md`
   - `harness/specs/resources-list.spec.md`
   - `harness/specs/close-schedule.spec.md`
+  - `harness/specs/close-schedule-edit.spec.md`
+  - `harness/specs/operating-hours-edit.spec.md`
   - `harness/artifacts/notice-list.figma.txt`
+  - `harness/artifacts/operating-hours-edit.figma.txt`
   - Figma `2114:1329` 휴관일 생성 기본 화면
   - Figma `2413:2955`, `2413:3046` 휴관일 생성 검증 오류 화면
+  - Figma `2456:5047` 날짜별 영업시간 수정 화면
   - `src/app/App.tsx`
   - `src/shared/theme/tokens.ts`
   - `scripts/map-tokens.mjs`
@@ -50,7 +54,7 @@
 - Primary navigation: 공지사항, 휴관일 관리, 자료실, 단체예약 현황
 - Core routes/screens:
   - `/notices/list`와 하위 생성·상세 화면
-  - `/notices/guide`, `/notices/guide/create`, `/notices/guide/hours/:date`
+  - `/notices/guide`, `/notices/guide/create`, `/notices/guide/:id/edit`, `/notices/guide/hours/:date`
   - `/notices/resources`와 하위 생성·상세 화면
   - `/notices/reservations`
 - Content hierarchy: 페이지 제목과 설명 → 주요 액션 → 필터·탐색 → 데이터 또는 폼 → 상태 피드백
@@ -74,7 +78,7 @@
 ## Components
 
 - Existing components to reuse: `LinkButton`, `DataTable`, 사이드바, 기존 페이지 헤더와 테마 토큰
-- New/changed components: 기능별 spec에서 필요한 폼, 캘린더, 상태 피드백을 정의한다. 구조가 동일해질 때만 `shared/ui`로 승격한다.
+- New/changed components: 기능별 spec에서 필요한 폼, 캘린더, 상태 피드백을 정의한다. 휴관 일정 생성·수정은 같은 날짜·제목 폼을 모드만 바꿔 재사용한다. 구조가 동일해질 때만 `shared/ui`로 승격한다.
 - Variants and states: 기본, hover, focus-visible, disabled, loading, error, success를 역할에 맞게 제공한다.
 - Token/component ownership: `tokens.ts`는 제품 의미가 있는 solid color와 공통 font family만 소유한다. px·rgba·spacing·radius·font-size·layout·shadow는 사용하는 Emotion 컴포넌트가 소유한다. 공통 표현은 `shared/ui`, 도메인 표현은 `entities`, 사용자 행동은 `features`, 화면 조합은 `pages`가 소유한다.
 

@@ -128,7 +128,11 @@ export function NoticeGuidePage() {
             {filteredSchedules.length > 0 ? (
               <CardList aria-label="휴관 일정 목록">
                 {filteredSchedules.map((schedule) => (
-                  <ScheduleCard key={schedule.id}>
+                  <ScheduleCard
+                    key={schedule.id}
+                    to={`/notices/guide/${schedule.id}/edit`}
+                    aria-label={`${schedule.title} 휴관 일정 수정`}
+                  >
                     <CardDate>{formatScheduleRange(schedule)}</CardDate>
                     <CardTitle>{schedule.title}</CardTitle>
                   </ScheduleCard>
@@ -454,7 +458,7 @@ const CardList = styled.div`
   margin-top: 24px;
 `
 
-const ScheduleCard = styled.article`
+const ScheduleCard = styled(Link)`
   display: flex;
   min-height: 88px;
   flex-direction: column;
@@ -464,6 +468,12 @@ const ScheduleCard = styled.article`
   border-radius: 20px;
   background: ${({ theme }) => theme.colors.surface};
   color: #36363f;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 4px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 4px;
+  }
 `
 
 const CardDate = styled.strong`

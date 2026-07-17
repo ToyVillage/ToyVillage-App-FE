@@ -16,6 +16,7 @@ export const tokens = {
     surface: '#FFFFFF', // 카드/테이블 표면
     tableHeader: '#E1E1E1', // 테이블 헤더
     border: '#A1A1A1',
+    dialogBorder: '#C6C6CE',
     divider: '#727272',
     avatar: '#D9D9D9',
     iconMuted: '#858585',

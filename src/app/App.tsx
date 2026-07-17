@@ -12,6 +12,7 @@ import {
 } from '@/pages/notices/resources'
 import {
   CreateCloseSchedulePage,
+  EditCloseSchedulePage,
   NoticeGuidePage,
   OperatingHoursPage,
 } from '@/pages/notices/guide'
@@ -37,6 +38,10 @@ export function App() {
         <Route
           path="/notices/guide/create"
           element={<CreateCloseSchedulePage />}
+        />
+        <Route
+          path="/notices/guide/:id/edit"
+          element={<EditCloseSchedulePage />}
         />
         <Route
           path="/notices/guide/hours/:date"
