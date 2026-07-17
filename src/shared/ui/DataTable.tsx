@@ -189,6 +189,12 @@ const SearchInput = styled.input`
   font: inherit;
   font-size: 20px;
 
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.accent};
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
   &::placeholder {
     color: ${({ theme }) => theme.colors.textFaint};
   }
