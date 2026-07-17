@@ -1,11 +1,15 @@
 {
   "feature": "notice-list",
-  "approvedAt": "2026-07-05T13:41:51.122Z",
+  "approvedAt": "2026-07-17T11:33:07.290Z",
   "approvedBy": "kimjihwan",
   "scenarioIds": [
     "S1",
-    "S2"
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6"
   ],
   "scenarioHash": "d421b56b127204b3d2f8518c57840dcec39bd1d07f1a65e17862afc8866deb83",
-  "e2eHash": "b7222245727344ca194718dd9b0101dc51485608f80fc87895723ce802e8d756"
+  "e2eHash": null
 }
