@@ -1,6 +1,6 @@
 {
   "feature": "resources-list",
-  "approvedAt": "2026-07-17T11:33:07.265Z",
+  "approvedAt": "2026-07-17T11:47:43.358Z",
   "approvedBy": "kimjihwan",
   "scenarioIds": [
     "S1",
@@ -11,6 +11,6 @@
     "S6",
     "S7"
   ],
-  "scenarioHash": "d14fe4cf281b6a16426daf9623e52114002c561df7c0bf169cb027bd225c7dbd",
-  "e2eHash": null
+  "scenarioHash": "6471b104a014754d5ca32f5baf67327b08c0399d14cdf19511a6a88c83073528",
+  "e2eHash": "72db6c0acbfa44c647cfc12518f1093f71b194403fc3c83ea4af26b79a656598"
 }
