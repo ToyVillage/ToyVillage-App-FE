@@ -11,7 +11,7 @@
 - **테스트를 수정하지 않는다.** `tests/e2e/**`, 승인 시나리오, `<feature>.approved.json`을 건드리지 않는다.
 - **시나리오를 재도출/재작성하지 않는다.** 승인된 시나리오는 동결(source of truth)이다.
 - 수정 후 ④(자동검증)부터 재실행한다.
-- design-rules.md를 계속 준수한다(하드코딩·useEffect fetch·Zustand 서버복제 등 금지 유지).
+- design-rules.md를 계속 준수한다(구현값 토큰화 금지·useEffect fetch·Zustand 서버복제 등 금지 유지).
 
 ## 루프 가드
 - 매 실패마다 `loop-guard.mjs`가 반복을 기록한다. `no-progress.md`의 STOP 조건(N=3 / 에러 정체 / 수정 정체)에 걸리면 **중단하고 개발자에게 반환**한다. 스스로 무한 재시도하지 않는다.

@@ -106,7 +106,7 @@ function isActiveRoute(pathname: string, route: string) {
 const Layer = styled.div`
   position: fixed;
   inset: 0;
-  z-index: ${({ theme }) => theme.layout.sidebarZIndex};
+  z-index: 20;
 `
 
 const Overlay = styled.button`
@@ -116,33 +116,32 @@ const Overlay = styled.button`
   height: 100%;
   padding: 0;
   border: 0;
-  background: ${({ theme }) => theme.colors.overlay};
+  background: rgba(0, 0, 0, 0.24);
   cursor: pointer;
 `
 
 const Panel = styled.aside`
   position: relative;
-  width: ${({ theme }) => theme.layout.sidebarWidth};
-  max-width: ${({ theme }) => theme.layout.sidebarMobileWidth};
+  width: 400px;
+  max-width: 100vw;
   min-height: 100vh;
   background: ${({ theme }) => theme.colors.surface};
-  border-radius: 0 ${({ theme }) => theme.radius.table}
-    ${({ theme }) => theme.radius.table} 0;
-  box-shadow: ${({ theme }) => theme.layout.sidebarShadow};
+  border-radius: 0 20px 20px 0;
+  box-shadow: 4px 0px 10px 0px rgba(0, 0, 0, 0.1);
 
-  @media (max-width: ${({ theme }) => theme.layout.sidebarMobileBreakpoint}) {
-    width: ${({ theme }) => theme.layout.sidebarMobileWidth};
+  @media (max-width: 480px) {
+    width: 100vw;
     border-radius: 0;
   }
 `
 
 const CloseButton = styled.button`
   position: absolute;
-  top: ${({ theme }) => theme.layout.sidebarTopPadding};
-  left: ${({ theme }) => theme.space.navX};
+  top: 32px;
+  left: 44px;
   display: inline-flex;
-  width: ${({ theme }) => theme.layout.sidebarCloseIconSize};
-  height: ${({ theme }) => theme.layout.sidebarCloseIconSize};
+  width: 36px;
+  height: 36px;
   align-items: center;
   justify-content: center;
   padding: 0;
@@ -152,68 +151,65 @@ const CloseButton = styled.button`
 `
 
 const CloseIcon = styled.img`
-  width: ${({ theme }) => theme.layout.sidebarCloseIconSize};
-  height: ${({ theme }) => theme.layout.sidebarCloseIconSize};
+  width: 36px;
+  height: 36px;
 `
 
 const Profile = styled.div`
   position: absolute;
-  top: ${({ theme }) => theme.layout.sidebarProfileTop};
+  top: 92px;
   left: 0;
   display: flex;
   width: 100%;
   align-items: center;
-  gap: ${({ theme }) => theme.space.buttonY};
-  padding: 0 ${({ theme }) => theme.space.navX};
+  gap: 12px;
+  padding: 0 44px;
 `
 
 const Avatar = styled.div`
-  width: ${({ theme }) => theme.layout.sidebarAvatarSize};
-  height: ${({ theme }) => theme.layout.sidebarAvatarSize};
-  flex: 0 0 ${({ theme }) => theme.layout.sidebarAvatarSize};
-  border-radius: ${({ theme }) => theme.radius.round};
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border-radius: 53px;
   background: ${({ theme }) => theme.colors.avatar};
 `
 
 const UserName = styled.span`
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.font.size.sidebarUser};
+  font-size: 26px;
   font-weight: 500;
   line-height: 1.2;
 `
 
 const Nav = styled.nav`
   position: absolute;
-  top: ${({ theme }) => theme.layout.sidebarNavTop};
+  top: 222px;
   left: 0;
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: calc(
-    ${({ theme }) => theme.layout.sidebarItemGap} -
-      ${({ theme }) => theme.layout.sidebarItemHeight}
-  );
+  gap: calc(56px - 32px);
 `
 
 const NavItem = styled(Link)<{ $active: boolean }>`
   display: flex;
-  min-height: ${({ theme }) => theme.layout.sidebarItemHeight};
+  min-height: 32px;
   align-items: center;
-  gap: ${({ theme }) => theme.space.buttonY};
-  padding: 0 ${({ theme }) => theme.space.navX};
+  gap: 12px;
+  padding: 0 44px;
   color: ${({ theme, $active }) =>
     $active ? theme.colors.primary : theme.colors.text};
   text-decoration: none;
 `
 
 const ItemIcon = styled.img`
-  width: ${({ theme }) => theme.layout.sidebarIconSize};
-  height: ${({ theme }) => theme.layout.sidebarIconSize};
-  flex: 0 0 ${({ theme }) => theme.layout.sidebarIconSize};
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
 `
 
 const ItemLabel = styled.span`
-  font-size: ${({ theme }) => theme.font.size.date};
+  font-size: 22px;
   font-weight: 600;
   line-height: 1.2;
 `

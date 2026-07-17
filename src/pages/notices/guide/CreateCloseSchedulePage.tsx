@@ -1,21 +1,33 @@
 import styled from '@emotion/styled'
+import { CloseScheduleForm } from '@/features/create-close-schedule'
+import { GuideBackLink } from './ui/GuideBackLink'
 
-// 슬라이스 스텁: "휴관일 생성하기" 이동 대상. 등록 폼 검증은 추후 구현.
 export function CreateCloseSchedulePage() {
   return (
     <Page>
-      <Title>휴관 일정 등록</Title>
+      <Content>
+        <BackRow>
+          <GuideBackLink />
+        </BackRow>
+        <CloseScheduleForm />
+      </Content>
     </Page>
   )
 }
 
 const Page = styled.main`
   min-height: 100vh;
-  padding: ${({ theme }) => theme.space.xl};
+  padding: 0 32px;
   background: ${({ theme }) => theme.colors.background};
+  font-family: ${({ theme }) => theme.font.body};
 `
 
-const Title = styled.h1`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.text};
+const Content = styled.div`
+  width: min(100%, 1320px);
+  margin: 0 auto;
+  padding-top: 80px;
+`
+
+const BackRow = styled.div`
+  margin: 0 0 35px;
 `

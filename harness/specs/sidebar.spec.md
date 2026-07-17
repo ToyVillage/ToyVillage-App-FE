@@ -51,7 +51,7 @@ paths: src/app, src/features/sidebar, src/shared/ui
 
 ## 비고 / 제약
 
-- 스타일은 Emotion + theme 토큰만 사용한다.
+- 스타일은 Emotion을 사용한다. solid color/font family는 theme 의미 토큰을 쓰고, px·rgba·spacing·radius 등 구현값은 styled 블록에 직접 작성한다.
 - 라우팅은 React Router의 `Link` 또는 `NavLink`를 사용한다.
 - 현재 `NoticeListPage` 안에 임시로 있는 햄버거 아이콘은 사이드바 구현 시 공통 토글 컴포넌트로 대체한다.
 - Figma 사이드바 프레임 nodeId가 확정되면 frontmatter의 `figma.nodeId`를 갱신한다.

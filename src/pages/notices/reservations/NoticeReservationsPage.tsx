@@ -10,7 +10,7 @@ export function NoticeReservationsPage() {
 
 const Page = styled.main`
   min-height: 100vh;
-  padding: ${({ theme }) => theme.space.xl};
+  padding: 32px;
   background: ${({ theme }) => theme.colors.background};
 `
 

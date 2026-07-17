@@ -25,20 +25,20 @@ Claude / Codex 모두 이 문서를 SSOT로 읽는다. (설계 문서의 툴 이
   - 폰트: `Wanted Sans` (Medium 500 / SemiBold 600), size 18·20·22·24·32·60
   - 간격: padding 10/44·11/40·6/12·12/16, gap 8·10 / radius 20·25·53px
 
-**결론:** 시맨틱 토큰 자동 추출 불가 → **fallback 경로(raw 수집 + 개발자 명명)** 채택.
+**결론:** 시맨틱 토큰 자동 추출 불가 → **fallback 경로(의미 토큰 후보와 직접 구현값 분리)** 채택.
 
-## 3. 토큰 전략 (fallback 확정: raw 수집 + 개발자 명명)
+## 3. 토큰 전략 (fallback 확정: 의미 토큰 최소화)
 
 1. `map-tokens.mjs`가 `get_figma_data` 응답에서 **raw 값을 수집·중복제거**해 후보 목록을 만든다:
-   - 색 → 사용 빈도와 함께 hex 목록
-   - 폰트 → family/weight/size 조합
-   - 간격/반경 → px 값 목록
+   - 의미 토큰 후보: solid hex color, 공통 font family
+   - 직접 구현값: px 치수·간격·반경·font size/weight, `rgba()`/`hsla()`와 alpha hex
 2. 후보를 `harness/artifacts/<feature>.token-candidates.json` + `<feature>.token-diff.report.md`로 출력한다.
-3. **의미 이름은 자동으로 붙이지 않는다.** 개발자가 중간 확인 게이트(`figma-review.md`)에서 후보에 시맨틱 이름(`color.primary` 등)을 부여한다.
-4. 기존 `src/shared/theme/tokens.ts`(현재 파란 플레이스홀더)와 대조하되 **기존 값 우선**, 차이는 diff로 보고한다. `map-tokens.mjs`는 **tokens.ts를 절대 쓰지 않는다**(읽기 전용).
-5. 개발자가 확정한 토큰만 개발자가 tokens.ts에 반영한다(하네스가 아님). `color.*`는 `theme.ts`에서 `colors.*`로 투영됨을 유념.
+3. **의미 이름은 자동으로 붙이지 않는다.** 개발자가 중간 확인 게이트(`figma-review.md`)에서 solid color/font family 후보에만 시맨틱 이름(`color.primary` 등)을 부여한다.
+4. px·spacing·radius·font size/weight·breakpoint·z-index·shadow·alpha color는 tokens.ts에 추가하지 않고 해당 Emotion 스타일에 직접 작성한다.
+5. 기존 `src/shared/theme/tokens.ts`와 대조하되 **기존 의미 토큰 우선**, 차이는 diff로 보고한다. `map-tokens.mjs`는 **tokens.ts를 절대 쓰지 않는다**(읽기 전용).
+6. `check-style-policy.mjs`가 tokens.ts의 구현값 그룹과 px/rgba 계열 값을 검출해 `yarn verify`를 실패시킨다.
 
-> 참고: 이 fallback 선택으로 map-tokens 계약이 "Variable 매퍼"에서 "raw 값 수집기 + 기존값 diff"로 바뀌었다. (Phase 1에서 이 형태로 구현)
+> `token-candidates.json`은 `tokenCandidates`와 `directValues`를 별도 필드로 제공한다.
 
 ## 4. 추출 계약 (무엇을 어디서)
 

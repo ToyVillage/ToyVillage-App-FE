@@ -41,7 +41,7 @@ paths: src/pages/notices/resources, src/features/create-resource, src/entities/r
 - 상세/생성 페이지는 이번엔 이동 대상 스텁까지만(폼은 추후).
 
 ## 비고 / 제약
-- 색/폰트는 tokens.ts에 이미 명명된 값 재사용(공지 화면과 동일 팔레트). 새 값이 있으면 map-tokens diff 후 개발자 명명.
+- solid color/font family는 tokens.ts의 의미 토큰을 재사용한다. px·rgba·font size/weight·spacing·radius는 map-tokens의 directValues를 참고해 Emotion에 직접 작성한다.
 - 컴포넌트는 `notice-list`의 NoticeTable/CategoryTabs와 구조가 유사 → 재사용/공통화 가능성 검토(과분리 방지).
 - 라우트가 `/notices/resources` 하위이므로 상위 `/notices` 라우팅과의 관계(중첩 여부)는 퍼블리싱 시 확인.
 - 업로드 허용 유형(pdf/jpg·jpeg/png/기타) 제한은 실제로는 **생성 페이지**(`/notices/resources/create`)에서 강제 — 이번 슬라이스는 이동 스텁까지라 목록 필터 탭만 구현, 업로드 검증 로직은 추후.
