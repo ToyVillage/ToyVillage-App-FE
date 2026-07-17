@@ -74,5 +74,5 @@ paths: src/pages/notices/guide, src/features/create-close-schedule, src/entities
 - 사이드바의 기존 `holidays` 항목은 `/notices/guide` 라우터를 유지한다.
 - Figma 기준 화면은 `nodeId: 1596:450`(목록 있음), `relatedNodeIds: 2413:2838`(빈 상태)이다.
 - Figma 색상 후보: 배경 `#F5F5F7`, 본문/버튼 `#36363F`, 보조 텍스트 `#848491`, 요일 헤더 `#DDDDE3`, 빈 상태 텍스트 `#AFAFBA`, 휴관 마커 `#FF7D7D`.
-- Figma에는 삭제 진입점이 없으므로 삭제 기능은 이번 스펙 범위에서 제외한다. 삭제가 필요하면 별도 디자인/기획 확정 후 추가한다.
+- 수정 화면 Figma `2114:1372`의 `삭제하기` 진입점과 삭제 확인 흐름은 `close-schedule-edit.spec.md`를 따른다.
 - 등록 폼의 필드, 검증과 저장 후 이동은 `close-schedule-create.spec.md`를 따른다.

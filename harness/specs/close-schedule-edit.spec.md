@@ -2,9 +2,12 @@
 feature: close-schedule-edit
 figma:
   fileKey: fkbMQaiPeIufKzjXXoWAPS
-  nodeId: 2114:1329
+  nodeId: 2114:1372
   relatedNodeIds:
+    - 2114:1329
     - 1596:450
+    - 2375:1860
+    - 2375:1957
     - 2413:2955
     - 2413:3046
 requires_functional_test: true
@@ -18,9 +21,10 @@ paths: src/pages/notices/guide/EditCloseSchedulePage.tsx, src/features/create-cl
 - Status: Active
 - Last refreshed: 2026-07-17
 - 목록 진입점: Figma `1596:450`
-- 폼 배치 기준: Figma `2114:1329`의 휴관일 생성 화면
+- 수정 화면과 삭제 액션 기준: Figma `2114:1372`
+- 공통 폼 배치 기준: Figma `2114:1329`의 휴관일 생성 화면
 - 날짜·제목 오류 상태: Figma `2413:2955`, `2413:3046`
-- 수정 전용 Figma 프레임은 제공되지 않았다. 생성 화면의 입력 구조와 시각값을 재사용하고, 주요 액션 라벨만 `수정하기`로 변경한다.
+- 수정 화면은 생성 화면의 입력 구조와 시각값을 재사용하고 `삭제하기`, `수정하기` 액션을 제공한다.
 - 공통 UI 원칙은 `DESIGN.md`, 목록 행동은 `close-schedule.spec.md`, 공통 입력·검증 규칙은 `close-schedule-create.spec.md`를 따른다.
 
 ## 목적
@@ -38,7 +42,7 @@ paths: src/pages/notices/guide/EditCloseSchedulePage.tsx, src/features/create-cl
 
 - 화면 배치, 날짜 카드, 제목 카드와 오류 dialog는 생성 페이지와 동일하게 재사용한다.
 - 선택한 일정의 `startDate`, `endDate`, `title`을 각 입력의 초기값으로 표시한다.
-- 주요 액션은 `수정하기`, 요청 중 라벨은 `수정 중`이다.
+- 액션은 `삭제하기`, `수정하기` 순서로 표시하고 수정 요청 중 라벨은 `수정 중`이다.
 - 수정 페이지를 직접 새로고침해도 `id`로 일정을 다시 조회해 초기값을 복원한다.
 - 조회 완료 전에는 빈 생성 폼을 표시하지 않는다.
 
@@ -61,6 +65,15 @@ paths: src/pages/notices/guide/EditCloseSchedulePage.tsx, src/features/create-cl
 - 실패 → 현재 URL과 입력값을 유지하고 `수정하지 못했습니다. 다시 시도해 주세요.`를 표시한다.
 - 실패 후 같은 화면에서 다시 시도할 수 있다.
 
+## 삭제
+
+- `삭제하기` 클릭 → Figma `2375:1957`의 `정말 삭제하시겠습니까?`, `삭제하신 뒤에는 영구삭제되며\n복구 할 수 없습니다` 확인 dialog를 표시한다.
+- dialog에서 `취소` 또는 Escape → 삭제하지 않고 dialog를 닫아 `삭제하기`로 포커스를 복귀한다.
+- dialog에서 `확인` → 선택 일정 ID로 삭제 요청을 한 번 전송한다.
+- 삭제 성공 → `['close-schedules']` query를 갱신하고 `/notices/guide`로 이동한다.
+- 목록과 해당 일정의 수정 URL에서 삭제된 일정을 다시 노출하지 않는다.
+- 삭제 실패 → 현재 수정 화면을 유지하고 `삭제하지 못했습니다. 다시 시도해 주세요.`를 표시한다.
+
 ## 데이터와 API 경계
 
 ```ts
@@ -74,6 +87,7 @@ interface UpdateCloseScheduleInput {
 
 - 단건 조회 endpoint 후보: `GET /close-schedule/:id`
 - 수정 endpoint 후보: `PUT /close-schedule/:id`
+- 삭제 endpoint 후보: `DELETE /close-schedule/:id`
 - 실제 API 계약 전에는 localStorage mock adapter를 사용한다.
 - 기본 mock 일정 수정값과 생성 일정은 ID 기준으로 병합하며 중복 카드를 만들지 않는다.
 - 서버 상태와 mutation은 TanStack Query가 소유한다.
@@ -83,15 +97,18 @@ interface UpdateCloseScheduleInput {
 - `EditCloseSchedulePage` (`pages/notices/guide`) — route param, 단건 조회, 잘못된 ID 복구, 수정 폼 조합
 - `CloseScheduleForm` (`features/create-close-schedule`) — 생성·수정 공통 입력과 검증, mode별 mutation과 라벨
 - `CloseScheduleDateField`, `ValidationDialog` — 기존 생성 UI 재사용
-- `getMockCloseSchedule`, `updateMockCloseSchedule` (`entities/close-schedule`) — 단건 조회와 ID 기반 수정 저장
+- `getMockCloseSchedule`, `updateMockCloseSchedule`, `deleteMockCloseSchedule` (`entities/close-schedule`) — 단건 조회와 ID 기반 수정·삭제 저장
 - 새 form, dialog 또는 date-picker 의존성을 추가하지 않는다.
 
 ## 접근성
 
 - 목록 카드는 실제 링크이며 접근 가능한 이름에 일정 제목과 `수정` 목적을 포함한다.
 - 폼의 보이는 label, 필수 상태, 오류 dialog와 포커스 복귀는 생성 페이지 계약을 유지한다.
-- 키보드 순서는 `뒤로가기` → 시작일 → 종료일 → 제목 → `수정하기`다.
-- 키보드만으로 카드 진입, 값 편집, 오류 확인, 수정 저장과 뒤로가기를 수행할 수 있다.
+- 키보드 순서는 `뒤로가기` → 시작일 → 종료일 → 제목 → `삭제하기` → `수정하기`다.
+- 제목 입력을 포함한 모든 조작 요소는 명확한 포커스 표시를 제공한다.
+- 삭제 확인 dialog는 `취소`에 초기 포커스를 두고, Tab/Shift+Tab 포커스를 내부에 유지한다.
+- 삭제 확인 dialog에서 Escape를 누르면 취소하고 `삭제하기` 버튼으로 포커스를 복귀한다.
+- 키보드만으로 카드 진입, 값 편집, 오류 확인, 수정 저장, 삭제와 뒤로가기를 수행할 수 있다.
 
 ## 반응형
 
@@ -108,10 +125,11 @@ interface UpdateCloseScheduleInput {
 - S5: 존재하지 않는 ID URL 진입 → `/notices/guide`로 replace 이동한다.
 - S6: 수정 저장 실패 → URL과 입력값이 유지되고 다시 시도할 수 있다.
 - S7: 키보드만 사용 → 카드 진입, 입력 편집, 수정 저장과 뒤로가기를 수행할 수 있다.
+- S8: 키보드로 삭제 dialog 진입·순환·취소 → 삭제 버튼으로 포커스가 복귀한다.
+- S9: 삭제 확인 → 목록으로 이동하고 해당 일정이 제거된다.
 
 ## 범위 제외
 
-- 휴관 일정 삭제
 - 반복 일정과 휴관 유형
 - 기간 중복 경고
 - 예약 차단 on/off 설정

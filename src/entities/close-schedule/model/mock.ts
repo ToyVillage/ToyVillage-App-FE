@@ -6,6 +6,13 @@ import type {
 
 export const closeScheduleStorageKey = 'toyvillage:close-schedules'
 
+interface DeletedCloseSchedule {
+  id: string
+  deleted: true
+}
+
+type StoredCloseSchedule = CloseSchedule | DeletedCloseSchedule
+
 export const mockCloseSchedules: CloseSchedule[] = [
   {
     id: 'animal-checkup',
@@ -40,8 +47,15 @@ export const mockCloseSchedules: CloseSchedule[] = [
 ]
 
 export async function getMockCloseSchedules(): Promise<CloseSchedule[]> {
+  const deletedIds = new Set(
+    readStoredEntries()
+      .filter(isDeletedCloseSchedule)
+      .map(({ id }) => id),
+  )
   const schedulesById = new Map(
-    mockCloseSchedules.map((schedule) => [schedule.id, schedule]),
+    mockCloseSchedules
+      .filter((schedule) => !deletedIds.has(schedule.id))
+      .map((schedule) => [schedule.id, schedule]),
   )
 
   for (const schedule of readStoredSchedules()) {
@@ -65,11 +79,11 @@ export async function createMockCloseSchedule(
     id: `created-${crypto.randomUUID()}`,
     ...input,
   }
-  const schedules = readStoredSchedules()
+  const entries = readStoredEntries()
 
   localStorage.setItem(
     closeScheduleStorageKey,
-    JSON.stringify([...schedules, schedule]),
+    JSON.stringify([...entries, schedule]),
   )
 
   return schedule
@@ -81,32 +95,53 @@ export async function updateMockCloseSchedule(
   const currentSchedule = await getMockCloseSchedule(input.id)
   if (!currentSchedule) throw new Error('Close schedule not found')
 
-  const schedules = readStoredSchedules()
-  const storedIndex = schedules.findIndex(
-    (schedule) => schedule.id === input.id,
+  const nextSchedules = readStoredEntries().filter(
+    (schedule) => schedule.id !== input.id,
   )
-  const nextSchedules = [...schedules]
-
-  if (storedIndex >= 0) {
-    nextSchedules[storedIndex] = input
-  } else {
-    nextSchedules.push(input)
-  }
+  nextSchedules.push(input)
 
   localStorage.setItem(closeScheduleStorageKey, JSON.stringify(nextSchedules))
   return input
 }
 
+export async function deleteMockCloseSchedule(id: string): Promise<void> {
+  const currentSchedule = await getMockCloseSchedule(id)
+  if (!currentSchedule) throw new Error('Close schedule not found')
+
+  const nextSchedules: StoredCloseSchedule[] = readStoredEntries().filter(
+    (schedule) => schedule.id !== id,
+  )
+  nextSchedules.push({ id, deleted: true })
+
+  localStorage.setItem(closeScheduleStorageKey, JSON.stringify(nextSchedules))
+}
+
 function readStoredSchedules(): CloseSchedule[] {
+  return readStoredEntries().filter(isCloseSchedule)
+}
+
+function readStoredEntries(): StoredCloseSchedule[] {
   const rawSchedules = localStorage.getItem(closeScheduleStorageKey)
   if (!rawSchedules) return []
 
   try {
     const schedules: unknown = JSON.parse(rawSchedules)
-    return Array.isArray(schedules) ? schedules.filter(isCloseSchedule) : []
+    return Array.isArray(schedules)
+      ? schedules.filter(
+          (schedule): schedule is StoredCloseSchedule =>
+            isCloseSchedule(schedule) || isDeletedCloseSchedule(schedule),
+        )
+      : []
   } catch {
     return []
   }
+}
+
+function isDeletedCloseSchedule(value: unknown): value is DeletedCloseSchedule {
+  if (!value || typeof value !== 'object') return false
+
+  const schedule = value as Record<string, unknown>
+  return typeof schedule.id === 'string' && schedule.deleted === true
 }
 
 function isCloseSchedule(value: unknown): value is CloseSchedule {

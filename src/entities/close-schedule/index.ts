@@ -1,6 +1,7 @@
 export {
   closeScheduleStorageKey,
   createMockCloseSchedule,
+  deleteMockCloseSchedule,
   getMockCloseSchedule,
   getMockCloseSchedules,
   mockCloseSchedules,
