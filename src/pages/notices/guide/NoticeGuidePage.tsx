@@ -9,8 +9,8 @@ import {
 } from '@/entities/close-schedule'
 import { CreateCloseScheduleButton } from '@/features/create-close-schedule'
 import arrowIcon from './ui/assets/arrow.svg'
-import filterIcon from './ui/assets/filter.svg'
-import searchIcon from './ui/assets/search.svg'
+import filterIcon from '@/shared/ui/assets/filter.svg'
+import searchIcon from '@/shared/ui/assets/search.svg'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
