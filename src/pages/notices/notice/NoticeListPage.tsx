@@ -68,7 +68,7 @@ export function NoticeListPage() {
           search={{
             value: query,
             onChange: setQuery,
-            placeholder: '제목으로 검색',
+            placeholder: '제목을 입력해주세요',
             ariaLabel: '공지 검색',
           }}
           pagination={{ page: currentPage, pageCount, onChange: setPage }}
