@@ -1,3 +1,4 @@
 export { CreateCloseSchedulePage } from './CreateCloseSchedulePage'
+export { EditCloseSchedulePage } from './EditCloseSchedulePage'
 export { NoticeGuidePage } from './NoticeGuidePage'
 export { OperatingHoursPage } from './OperatingHoursPage'

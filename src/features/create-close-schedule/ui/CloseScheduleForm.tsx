@@ -2,7 +2,12 @@ import { useCallback, useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { createMockCloseSchedule } from '@/entities/close-schedule'
+import {
+  createMockCloseSchedule,
+  updateMockCloseSchedule,
+  type CloseSchedule,
+  type CreateCloseScheduleInput,
+} from '@/entities/close-schedule'
 import { CloseScheduleDateField } from './CloseScheduleDateField'
 import { ValidationDialog } from './ValidationDialog'
 
@@ -14,18 +19,31 @@ const validationMessages: Record<ValidationError, string> = {
   range: '종료일은 시작일과 같거나 이후여야 합니다',
 }
 
-export function CloseScheduleForm() {
+interface CloseScheduleFormProps {
+  initialSchedule?: CloseSchedule
+}
+
+export function CloseScheduleForm({ initialSchedule }: CloseScheduleFormProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const submittingRef = useRef(false)
   const startDateRef = useRef<HTMLInputElement>(null)
   const endDateRef = useRef<HTMLInputElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
-  const [title, setTitle] = useState('')
+  const [startDate, setStartDate] = useState(
+    () => initialSchedule?.startDate ?? '',
+  )
+  const [endDate, setEndDate] = useState(() => initialSchedule?.endDate ?? '')
+  const [title, setTitle] = useState(() => initialSchedule?.title ?? '')
   const [validationError, setValidationError] =
     useState<ValidationError | null>(null)
-  const mutation = useMutation({ mutationFn: createMockCloseSchedule })
+  const mutation = useMutation({
+    mutationFn: (input: CreateCloseScheduleInput) =>
+      initialSchedule
+        ? updateMockCloseSchedule({ id: initialSchedule.id, ...input })
+        : createMockCloseSchedule(input),
+  })
+  const isEditing = Boolean(initialSchedule)
 
   const handleConfirm = useCallback(() => {
     const error = validationError
@@ -48,6 +66,8 @@ export function CloseScheduleForm() {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submittingRef.current) return
+
     if (!startDate || !endDate) {
       setValidationError('date')
       return
@@ -64,6 +84,7 @@ export function CloseScheduleForm() {
       return
     }
 
+    submittingRef.current = true
     mutation.mutate(
       { startDate, endDate, title: normalizedTitle },
       {
@@ -72,6 +93,9 @@ export function CloseScheduleForm() {
             queryKey: ['close-schedules'],
           })
           navigate('/notices/guide')
+        },
+        onError: () => {
+          submittingRef.current = false
         },
       },
     )
@@ -114,12 +138,22 @@ export function CloseScheduleForm() {
 
       <Actions>
         <SubmitButton type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? '생성 중' : '생성하기'}
+          {mutation.isPending
+            ? isEditing
+              ? '수정 중'
+              : '생성 중'
+            : isEditing
+              ? '수정하기'
+              : '생성하기'}
         </SubmitButton>
       </Actions>
 
       {mutation.isError && (
-        <Status role="status">생성하지 못했습니다. 다시 시도해 주세요.</Status>
+        <Status role="status">
+          {isEditing
+            ? '수정하지 못했습니다. 다시 시도해 주세요.'
+            : '생성하지 못했습니다. 다시 시도해 주세요.'}
+        </Status>
       )}
 
       {validationError && (

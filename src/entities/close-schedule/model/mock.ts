@@ -1,4 +1,8 @@
-import type { CloseSchedule, CreateCloseScheduleInput } from './types'
+import type {
+  CloseSchedule,
+  CreateCloseScheduleInput,
+  UpdateCloseScheduleInput,
+} from './types'
 
 export const closeScheduleStorageKey = 'toyvillage:close-schedules'
 
@@ -36,7 +40,22 @@ export const mockCloseSchedules: CloseSchedule[] = [
 ]
 
 export async function getMockCloseSchedules(): Promise<CloseSchedule[]> {
-  return [...mockCloseSchedules, ...readCreatedSchedules()]
+  const schedulesById = new Map(
+    mockCloseSchedules.map((schedule) => [schedule.id, schedule]),
+  )
+
+  for (const schedule of readStoredSchedules()) {
+    schedulesById.set(schedule.id, schedule)
+  }
+
+  return [...schedulesById.values()]
+}
+
+export async function getMockCloseSchedule(
+  id: string,
+): Promise<CloseSchedule | undefined> {
+  const schedules = await getMockCloseSchedules()
+  return schedules.find((schedule) => schedule.id === id)
 }
 
 export async function createMockCloseSchedule(
@@ -46,7 +65,7 @@ export async function createMockCloseSchedule(
     id: `created-${crypto.randomUUID()}`,
     ...input,
   }
-  const schedules = readCreatedSchedules()
+  const schedules = readStoredSchedules()
 
   localStorage.setItem(
     closeScheduleStorageKey,
@@ -56,7 +75,29 @@ export async function createMockCloseSchedule(
   return schedule
 }
 
-function readCreatedSchedules(): CloseSchedule[] {
+export async function updateMockCloseSchedule(
+  input: UpdateCloseScheduleInput,
+): Promise<CloseSchedule> {
+  const currentSchedule = await getMockCloseSchedule(input.id)
+  if (!currentSchedule) throw new Error('Close schedule not found')
+
+  const schedules = readStoredSchedules()
+  const storedIndex = schedules.findIndex(
+    (schedule) => schedule.id === input.id,
+  )
+  const nextSchedules = [...schedules]
+
+  if (storedIndex >= 0) {
+    nextSchedules[storedIndex] = input
+  } else {
+    nextSchedules.push(input)
+  }
+
+  localStorage.setItem(closeScheduleStorageKey, JSON.stringify(nextSchedules))
+  return input
+}
+
+function readStoredSchedules(): CloseSchedule[] {
   const rawSchedules = localStorage.getItem(closeScheduleStorageKey)
   if (!rawSchedules) return []
 

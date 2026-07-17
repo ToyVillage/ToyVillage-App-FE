@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
@@ -40,6 +40,7 @@ export function OperatingHoursForm({ date }: OperatingHoursFormProps) {
 function OperatingHoursEditor({ initialHours }: OperatingHoursEditorProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const submittingRef = useRef(false)
   const [openingTime, setOpeningTime] = useState(() =>
     from24HourTime(initialHours.opensAt),
   )
@@ -51,6 +52,8 @@ function OperatingHoursEditor({ initialHours }: OperatingHoursEditorProps) {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submittingRef.current) return
+
     if (!isValidTime(openingTime) || !isValidTime(closingTime)) {
       setValidationError('시간을 확인해 주세요')
       return
@@ -64,6 +67,7 @@ function OperatingHoursEditor({ initialHours }: OperatingHoursEditorProps) {
     }
 
     setValidationError('')
+    submittingRef.current = true
     mutation.mutate(
       { date: initialHours.date, opensAt, closesAt },
       {
@@ -72,6 +76,9 @@ function OperatingHoursEditor({ initialHours }: OperatingHoursEditorProps) {
             queryKey: ['operating-hours', initialHours.date],
           })
           navigate('/notices/guide')
+        },
+        onError: () => {
+          submittingRef.current = false
         },
       },
     )

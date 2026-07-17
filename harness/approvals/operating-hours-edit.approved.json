@@ -1,6 +1,6 @@
 {
   "feature": "operating-hours-edit",
-  "approvedAt": "2026-07-16T15:47:10.400Z",
+  "approvedAt": "2026-07-17T08:00:15.721Z",
   "approvedBy": "user",
   "scenarioIds": [
     "S1",
@@ -9,8 +9,13 @@
     "S4",
     "S5",
     "S6",
-    "S7"
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S12"
   ],
-  "scenarioHash": "e9be81cabc2c0edd2d29a7d9e3cd042bc0292a0e96adea2dbd4150d17920b768",
-  "e2eHash": "293a3eb5ce3bb84adbd2a533f9b9fde1df5e3cca3d77a12eacb30f9ba9f802ea"
+  "scenarioHash": "0aac22a9fda50bf7c99b654f8ed40a4c9484e2c1202de74040e93ad4d65dc5b4",
+  "e2eHash": "e719864ce09d1f8528cc6c77f81041c38ea68463aa238dfd077faad599539746"
 }
