@@ -1,14 +1,27 @@
-import { DataTable } from '@/shared/ui'
+import {
+  DataTable,
+  type DataTableSearch,
+  type DataTablePagination,
+} from '@/shared/ui'
 import type { Resource } from '../model/types'
 import { fileTypeLabel } from '../model/mock'
 
 interface ResourceTableProps {
   resources: Resource[]
   onRowClick?: (id: string) => void
+  search?: DataTableSearch
+  pagination?: DataTablePagination
+  emptyLabel?: string
 }
 
 // Resource → DataTable row 매핑. 표현은 shared/ui/DataTable 재사용.
-export function ResourceTable({ resources, onRowClick }: ResourceTableProps) {
+export function ResourceTable({
+  resources,
+  onRowClick,
+  search,
+  pagination,
+  emptyLabel,
+}: ResourceTableProps) {
   return (
     <DataTable
       rows={resources.map((r) => ({
@@ -19,6 +32,9 @@ export function ResourceTable({ resources, onRowClick }: ResourceTableProps) {
       }))}
       onRowClick={onRowClick}
       rowTestId="resource-row"
+      search={search}
+      pagination={pagination}
+      emptyLabel={emptyLabel}
     />
   )
 }
