@@ -1,20 +1,31 @@
 import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { NoticeTable, mockNotices, noticeCategories } from '@/entities/notice'
+import {
+  getMockNotices,
+  NoticeTable,
+  mockNotices,
+  noticeCategories,
+} from '@/entities/notice'
 import { CreateNoticeButton } from '@/features/create-notice'
 import { CategoryTabs } from './ui/CategoryTabs'
 
 export function NoticeListPage() {
   const navigate = useNavigate()
   const [active, setActive] = useState('전체')
+  const { data: allNotices = mockNotices } = useQuery({
+    queryKey: ['notices'],
+    queryFn: getMockNotices,
+    placeholderData: mockNotices,
+  })
 
   const notices = useMemo(
     () =>
       active === '전체'
-        ? mockNotices
-        : mockNotices.filter((n) => n.category === active),
-    [active],
+        ? allNotices
+        : allNotices.filter((notice) => notice.category === active),
+    [active, allNotices],
   )
 
   return (
