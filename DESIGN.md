@@ -3,12 +3,13 @@
 ## Source of truth
 
 - Status: Active
-- Last refreshed: 2026-07-17
+- Last refreshed: 2026-07-18
 - Primary product surfaces: 토이빌리지 관리자 웹의 공지사항, 휴관일 관리, 자료실, 단체 예약 현황
 - Evidence reviewed:
   - `README.md`
   - `harness/design-rules.md`
   - `harness/specs/notice-list.spec.md`
+  - `harness/specs/notice-create.spec.md`
   - `harness/specs/resources-list.spec.md`
   - `harness/specs/close-schedule.spec.md`
   - `harness/specs/close-schedule-edit.spec.md`
@@ -78,7 +79,7 @@
 ## Components
 
 - Existing components to reuse: `LinkButton`, `DataTable`, 사이드바, 기존 페이지 헤더와 테마 토큰
-- New/changed components: 기능별 spec에서 필요한 폼, 캘린더, 상태 피드백을 정의한다. 휴관 일정 생성·수정은 같은 날짜·제목 폼을 모드만 바꿔 재사용한다. 구조가 동일해질 때만 `shared/ui`로 승격한다.
+- New/changed components: 기능별 spec에서 필요한 폼, 캘린더, 상태 피드백을 정의한다. 공지 생성은 분류·제목·내용을 다루는 feature 폼으로 소유하고, 휴관 일정 생성·수정은 같은 날짜·제목 폼을 모드만 바꿔 재사용한다. 구조가 동일해질 때만 `shared/ui`로 승격한다.
 - Variants and states: 기본, hover, focus-visible, disabled, loading, error, success를 역할에 맞게 제공한다.
 - Token/component ownership: `tokens.ts`는 제품 의미가 있는 solid color와 공통 font family만 소유한다. px·rgba·spacing·radius·font-size·layout·shadow는 사용하는 Emotion 컴포넌트가 소유한다. 공통 표현은 `shared/ui`, 도메인 표현은 `entities`, 사용자 행동은 `features`, 화면 조합은 `pages`가 소유한다.
 
@@ -123,5 +124,6 @@
 
 - [ ] 운영 권한별 생성·수정·삭제 범위 / 제품 담당 / 관리자 액션 노출에 영향
 - [ ] 공통 성공·오류 토스트와 확인 모달 패턴 / 디자인 담당 / 생성 화면 피드백 구현에 영향
+- [ ] 공지 생성 화면과 상태별 Figma node ID 및 정확한 입력 정책 / 제품·디자인 담당 / 공지 생성 폼의 배치·문구·검증 표현에 영향
 - [ ] 관리자 웹의 최소 지원 너비와 브라우저 범위 / 제품·개발 담당 / 반응형 수용 기준에 영향
 - [ ] 휴관일 반복 일정의 규칙과 서버 모델 / 제품·백엔드 담당 / 반복 등록 기능 범위에 영향
