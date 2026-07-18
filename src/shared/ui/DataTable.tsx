@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import searchIcon from './assets/search.svg'
-import filterIcon from './assets/filter.svg'
 import chevronIcon from './assets/chevron-left.svg'
 
 // 분류(pill) / 제목 / 날짜 3컬럼 테이블. 도메인 무관 프레젠테이션 컴포넌트.
@@ -68,7 +67,6 @@ export function DataTable({
               aria-label={search.ariaLabel ?? '검색'}
               onChange={(e) => search.onChange(e.target.value)}
             />
-            <FilterIcon src={filterIcon} alt="" aria-hidden="true" />
           </SearchBar>
         </SearchRow>
       )}
@@ -189,12 +187,6 @@ const SearchInput = styled.input`
   font: inherit;
   font-size: 20px;
 
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.accent};
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-
   &::placeholder {
     color: ${({ theme }) => theme.colors.textFaint};
   }
@@ -208,12 +200,6 @@ const SearchIcon = styled.img`
   width: 20px;
   height: 20px;
   flex: 0 0 20px;
-`
-
-const FilterIcon = styled.img`
-  width: 22px;
-  height: 20px;
-  flex: 0 0 22px;
 `
 
 const EmptyRow = styled.div`
