@@ -162,11 +162,6 @@ const Input = styled.input`
     color: ${({ theme }) => theme.colors.text};
     opacity: 1;
   }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.textGuide};
-    outline-offset: 2px;
-  }
 `
 
 const Actions = styled.div`
