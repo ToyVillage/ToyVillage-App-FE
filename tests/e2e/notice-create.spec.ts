@@ -12,10 +12,13 @@ test.beforeEach(async ({ page }) => {
 
 test('S2: 생성 폼 표시', async ({ page }) => {
   await expect(page.getByRole('link', { name: '뒤로가기' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: '공지 생성' })).toBeVisible()
-  await expect(page.getByLabel(/분류/)).toBeVisible()
+  await expect(page.getByRole('heading', { name: '공지 생성' })).toHaveCount(0)
   await expect(page.getByLabel(/제목/)).toBeVisible()
+  await expect(page.getByRole('group', { name: /분류/ })).toBeVisible()
   await expect(page.getByLabel(/내용/)).toBeVisible()
+  await expect(attachmentGroup(page)).toBeVisible()
+  await expect(page.getByTestId('notice-attachment-card')).toBeEmpty()
+  await expect(uploadControl(page)).toBeVisible()
   await expect(page.getByRole('button', { name: '생성하기' })).toBeVisible()
 })
 
@@ -24,14 +27,43 @@ test('S3: 목록으로 돌아가기', async ({ page }) => {
   await expect(page).toHaveURL(/\/notices\/list$/)
 })
 
-test('S4: 빈 폼은 분류 오류 모달을 표시하고 확인 후 첫 입력에 포커스한다', async ({
+test('제목과 내용 입력은 포커스 테두리를 표시하지 않는다', async ({ page }) => {
+  const title = page.getByLabel(/제목/)
+  const content = page.getByLabel(/내용/)
+
+  await title.focus()
+  await expect(title).toHaveCSS('outline-style', 'none')
+
+  await content.focus()
+  await expect(content).toHaveCSS('outline-style', 'none')
+})
+
+test('내용 입력은 수동 크기 조절 없이 입력량에 맞춰 높이가 늘어난다', async ({
+  page,
+}) => {
+  const content = page.getByLabel(/내용/)
+  const initialHeight = await content.evaluate(
+    (element) => element.clientHeight,
+  )
+
+  await expect(content).toHaveCSS('resize', 'none')
+  await content.fill(
+    Array.from({ length: 20 }, (_, index) => `${index}`).join('\n'),
+  )
+
+  await expect
+    .poll(() => content.evaluate((element) => element.clientHeight))
+    .toBeGreaterThan(initialHeight)
+})
+
+test('S4: 빈 폼은 제목 오류 모달을 표시하고 확인 후 첫 입력에 포커스한다', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1920, height: 1080 })
   await page.getByRole('button', { name: '생성하기' }).click()
 
   const dialog = page.getByRole('alertdialog')
-  await expect(dialog).toContainText('분류를 선택해 주세요')
+  await expect(dialog).toContainText('제목을 입력해 주세요')
   await expect(dialog).toHaveCSS('width', '560px')
   await expect(dialog).toHaveCSS('min-height', '320px')
   await expect(dialog).toHaveCSS('border-radius', '20px')
@@ -42,22 +74,23 @@ test('S4: 빈 폼은 분류 오류 모달을 표시하고 확인 후 첫 입력�
 
   await dialog.getByRole('button', { name: '확인' }).click()
   await expect(dialog).toBeHidden()
-  await expect(page.getByLabel(/분류/)).toBeFocused()
+  await expect(page.getByLabel(/제목/)).toBeFocused()
   expect(await readStoredNoticeCount(page)).toBe(0)
 })
 
-test('S5: 분류만 선택하면 제목 오류 모달을 표시한다', async ({ page }) => {
-  await page.getByLabel(/분류/).selectOption('팀이름 1')
+test('S5: 제목만 입력하면 분류 오류 모달을 표시한다', async ({ page }) => {
+  await page.getByLabel(/제목/).fill('제목 입력')
   await page.getByRole('button', { name: '생성하기' }).click()
 
   const dialog = page.getByRole('alertdialog')
-  await expect(dialog).toContainText('제목을 입력해 주세요')
+  await expect(dialog).toContainText('분류를 선택해 주세요')
   await dialog.getByRole('button', { name: '확인' }).click()
-  await expect(page.getByLabel(/제목/)).toBeFocused()
+  await expect(page.getByRole('radio', { name: '전체' })).toBeFocused()
 })
 
-test('S6: 제목과 내용 오류를 순서대로 모달로 검증한다', async ({ page }) => {
-  await page.getByLabel(/분류/).selectOption('팀이름 1')
+test('S6: 제목, 분류, 내용 오류를 화면 순서대로 모달로 검증한다', async ({
+  page,
+}) => {
   await page.getByLabel(/제목/).fill('   ')
   await page.getByLabel(/내용/).fill('\n   ')
   await page.getByRole('button', { name: '생성하기' }).click()
@@ -68,6 +101,12 @@ test('S6: 제목과 내용 오류를 순서대로 모달로 검증한다', async
   await expect(page.getByLabel(/제목/)).toBeFocused()
 
   await page.getByLabel(/제목/).fill('제목 입력')
+  await page.getByRole('button', { name: '생성하기' }).click()
+  await expect(dialog).toContainText('분류를 선택해 주세요')
+  await dialog.getByRole('button', { name: '확인' }).click()
+  await expect(page.getByRole('radio', { name: '전체' })).toBeFocused()
+
+  await page.getByRole('radio', { name: /팀 이름1/ }).check()
   await page.getByRole('button', { name: '생성하기' }).click()
   await expect(dialog).toContainText('내용을 입력해 주세요')
   await dialog.getByRole('button', { name: '확인' }).click()
@@ -116,7 +155,7 @@ test('S9: 저장 실패 시 입력을 보존하고 다시 제출할 수 있다',
   await page.getByRole('button', { name: '생성하기' }).click()
 
   await expect(page).toHaveURL(/\/notices\/list\/create$/)
-  await expect(page.getByLabel(/분류/)).toHaveValue('팀이름 1')
+  await expect(page.getByRole('radio', { name: /팀 이름1/ })).toBeChecked()
   await expect(page.getByLabel(/제목/)).toHaveValue('보존할 공지')
   await expect(page.getByLabel(/내용/)).toHaveValue('공지 내용입니다.')
   await expect(
@@ -131,23 +170,171 @@ test('S10: 키보드 순서와 오류 포커스 이동', async ({ page }) => {
   await expect(backLink).toBeFocused()
 
   await page.keyboard.press('Tab')
-  await expect(page.getByLabel(/분류/)).toBeFocused()
-  await page.keyboard.press('Tab')
   await expect(page.getByLabel(/제목/)).toBeFocused()
   await page.keyboard.press('Tab')
+  await expect(page.getByRole('radio', { name: '전체' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(
+    page.getByRole('button', { name: '팀 이름1 삭제' }),
+  ).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(
+    page.getByRole('button', { name: '팀 이름2 삭제' }),
+  ).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: '팀 추가' })).toBeFocused()
+  await page.keyboard.press('Tab')
   await expect(page.getByLabel(/내용/)).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(uploadControl(page)).toBeFocused()
   await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '생성하기' })).toBeFocused()
   await page.keyboard.press('Enter')
   await expect(page.getByRole('button', { name: '확인' })).toBeFocused()
   await page.keyboard.press('Escape')
-  await expect(page.getByLabel(/분류/)).toBeFocused()
+  await expect(page.getByLabel(/제목/)).toBeFocused()
+})
+
+test('팀을 선택해도 핑크로 강조하지 않는다', async ({ page }) => {
+  const team = page.getByRole('radio', { name: '팀 이름1' })
+
+  await team.check()
+
+  await expect(team).toBeChecked()
+  await expect(page.getByText('팀 이름1', { exact: true })).toHaveCSS(
+    'background-color',
+    'rgb(245, 245, 247)',
+  )
+})
+
+test('팀의 X를 누르면 해당 팀이 사라지고 선택도 해제된다', async ({ page }) => {
+  await page.getByLabel(/제목/).fill('제목 입력')
+  await page.getByLabel(/내용/).fill('공지 내용')
+  await page.getByRole('radio', { name: '팀 이름1' }).check()
+
+  await page.getByRole('button', { name: '팀 이름1 삭제' }).click()
+
+  await expect(page.getByRole('radio', { name: '팀 이름1' })).toHaveCount(0)
+  await page.getByRole('button', { name: '생성하기' }).click()
+  await expect(page.getByRole('alertdialog')).toContainText(
+    '분류를 선택해 주세요',
+  )
+})
+
+test('팀 추가 버튼을 누르면 팀 이름 입력 모달을 표시하고 취소할 수 있다', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1651, height: 1248 })
+  const addButton = page.getByRole('button', { name: '팀 추가' })
+  await addButton.click()
+
+  const dialog = page.getByRole('dialog', { name: '팀 추가하기' })
+  const teamNameInput = dialog.getByRole('textbox', { name: '팀 이름' })
+  await expect(dialog).toBeVisible()
+  await expect(dialog).toHaveCSS('width', '600px')
+  await expect(dialog).toHaveCSS('min-height', '370px')
+  await expect(dialog).toBeFocused()
+  await expect(teamNameInput).not.toBeFocused()
+  await expect(dialog.getByRole('button', { name: '취소' })).toBeVisible()
+  await expect(dialog.getByRole('button', { name: '다음' })).toBeVisible()
+
+  if (process.env.CAPTURE_VISUAL_ARTIFACT === '1') {
+    await page.screenshot({
+      path: '.omx/artifacts/visual-ralph/team-add-dialog/actual.png',
+    })
+  }
+
+  await dialog.getByRole('button', { name: '취소' }).click()
+
+  await expect(dialog).toBeHidden()
+  await expect(addButton).toBeFocused()
+})
+
+test('모달에 입력한 이름으로 팀을 추가한다', async ({ page }) => {
+  await page.getByRole('button', { name: '팀 추가' }).click()
+  const dialog = page.getByRole('dialog', { name: '팀 추가하기' })
+  await dialog.getByRole('textbox', { name: '팀 이름' }).fill('새 팀')
+  await dialog.getByRole('button', { name: '다음' }).click()
+
+  await expect(page.getByRole('dialog', { name: '팀 추가하기' })).toBeHidden()
+  await expect(page.getByRole('radio', { name: '새 팀' })).toBeChecked()
+  await expect(page.getByRole('button', { name: '새 팀 삭제' })).toBeVisible()
+})
+
+test('S11: 첨부파일 영역은 빈 첨부 카드와 업로드 dropzone을 표시한다', async ({
+  page,
+}) => {
+  const attachments = attachmentGroup(page)
+  const emptyCard = page.getByTestId('notice-attachment-card')
+  const upload = uploadControl(page)
+
+  await expect(attachments).toBeVisible()
+  await expect(emptyCard).toBeVisible()
+  await expect(emptyCard).toBeEmpty()
+  await expect(upload).toBeVisible()
+
+  const emptyCardBounds = await emptyCard.boundingBox()
+  const uploadBounds = await upload.boundingBox()
+  expect(emptyCardBounds).not.toBeNull()
+  expect(uploadBounds).not.toBeNull()
+  expect(emptyCardBounds!.y).toBeLessThan(uploadBounds!.y)
+})
+
+test('S12: 여러 파일을 선택하면 파일명 chip과 삭제 control을 표시한다', async ({
+  page,
+}) => {
+  await uploadInput(page).setInputFiles([
+    filePayload('운영 안내.pdf', 'application/pdf'),
+    filePayload('행사 이미지.png', 'image/png'),
+  ])
+
+  await expect(attachmentGroup(page).getByText('운영 안내.pdf')).toBeVisible()
+  await expect(attachmentGroup(page).getByText('행사 이미지.png')).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: '운영 안내.pdf 삭제' }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: '행사 이미지.png 삭제' }),
+  ).toBeVisible()
+})
+
+test('S13: 첨부 파일을 제거하면 빈 첨부 카드로 돌아간다', async ({ page }) => {
+  await uploadInput(page).setInputFiles([
+    filePayload('삭제할 파일.txt', 'text/plain'),
+  ])
+
+  await page.getByRole('button', { name: '삭제할 파일.txt 삭제' }).click()
+
+  await expect(attachmentGroup(page).getByText('삭제할 파일.txt')).toHaveCount(
+    0,
+  )
+  await expect(page.getByTestId('notice-attachment-card')).toBeEmpty()
 })
 
 async function fillValidNotice(page: Page, title: string) {
-  await page.getByLabel(/분류/).selectOption('팀이름 1')
+  await page.getByRole('radio', { name: /팀 이름1/ }).check()
   await page.getByLabel(/제목/).fill(title)
   await page.getByLabel(/내용/).fill('공지 내용입니다.')
+}
+
+function attachmentGroup(page: Page) {
+  return page.getByRole('group', { name: '첨부파일' })
+}
+
+function uploadControl(page: Page) {
+  return page.getByRole('button', { name: '파일 업로드' })
+}
+
+function uploadInput(page: Page) {
+  return page.getByLabel('첨부파일 선택')
+}
+
+function filePayload(name: string, mimeType: string) {
+  return {
+    name,
+    mimeType,
+    buffer: Buffer.from(`fixture for ${name}`),
+  }
 }
 
 async function readStoredNoticeCount(page: Page): Promise<number> {

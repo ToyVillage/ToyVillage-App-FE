@@ -12,7 +12,6 @@ export function CreateNoticePage() {
           </BackIcon>
           뒤로가기
         </BackLink>
-        <Title>공지 생성</Title>
         <NoticeForm />
       </Content>
     </Page>
@@ -21,7 +20,7 @@ export function CreateNoticePage() {
 
 const Page = styled.main`
   min-height: 100vh;
-  padding: 0 32px 80px;
+  padding: 0 32px 32px;
   background: ${({ theme }) => theme.colors.background};
   font-family: ${({ theme }) => theme.font.body};
 `
@@ -44,8 +43,8 @@ const BackLink = styled(Link)`
   text-decoration: none;
 
   &:focus-visible {
-    outline: 4px solid ${({ theme }) => theme.colors.primary};
-    outline-offset: 4px;
+    outline: 2px solid ${({ theme }) => theme.colors.textGuide};
+    outline-offset: 3px;
   }
 `
 
@@ -57,12 +56,4 @@ const BackIcon = styled.svg`
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 3;
-`
-
-const Title = styled.h1`
-  margin: 36px 0 0;
-  color: ${({ theme }) => theme.colors.text};
-  font-size: 48px;
-  font-weight: 600;
-  line-height: 1.2;
 `
