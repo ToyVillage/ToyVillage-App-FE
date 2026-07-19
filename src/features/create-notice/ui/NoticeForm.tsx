@@ -116,10 +116,7 @@ export function NoticeForm() {
                   checked={category === option}
                   onChange={(event) => setCategory(event.target.value)}
                 />
-                <CategoryPill
-                  data-has-remove={option !== '전체'}
-                  data-selected={category === option && option === '전체'}
-                >
+                <CategoryPill data-has-remove={option !== '전체'}>
                   {categoryDisplayName(option)}
                 </CategoryPill>
               </CategorySelectLabel>
@@ -325,7 +322,6 @@ const CategoryOption = styled.div`
 const CategorySelectLabel = styled.label`
   position: relative;
   display: inline-flex;
-  cursor: pointer;
 `
 
 const CategoryRadio = styled.input`
@@ -335,7 +331,6 @@ const CategoryRadio = styled.input`
   width: 100%;
   height: 100%;
   margin: 0;
-  cursor: pointer;
   opacity: 0;
 
   &:focus-visible + span {
@@ -361,11 +356,6 @@ const CategoryPill = styled.span`
   &[data-has-remove='true'] {
     padding-right: 46px;
   }
-
-  &[data-selected='true'] {
-    border-color: ${({ theme }) => theme.colors.primary};
-    background: ${({ theme }) => theme.colors.primaryBg};
-  }
 `
 
 const CategoryRemove = styled.button`
@@ -389,6 +379,11 @@ const CategoryRemove = styled.button`
   font-size: 16px;
   font-weight: 400;
   line-height: 1;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.danger};
+    color: ${({ theme }) => theme.colors.danger};
+  }
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.textGuide};
