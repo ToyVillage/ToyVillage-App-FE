@@ -28,6 +28,87 @@ test('S3: 목록으로 돌아가기', async ({ page }) => {
   await expect(page).toHaveURL(/\/notices\/list$/)
 })
 
+test('작성 후 뒤로가기를 누르면 이탈 확인 모달을 표시하고 취소할 수 있다', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1920, height: 1080 })
+  const backLink = page.getByRole('link', { name: '뒤로가기' })
+  const title = page.getByLabel(/제목/)
+
+  await title.fill('작성 중인 공지')
+  await backLink.click()
+
+  const dialog = page.getByRole('alertdialog', {
+    name: '정말 나가시겠습니까?',
+  })
+  await expect(dialog).toBeVisible()
+  await expect(dialog).toContainText('저장하지 않고 돌아갈 시')
+  await expect(dialog).toContainText('입력된 정보가 삭제됩니다')
+  await expect(dialog).toHaveCSS('width', '600px')
+  await expect(dialog).toHaveCSS('min-height', '300px')
+  await expect(dialog).toHaveCSS('border-radius', '20px')
+  await expect(dialog.getByRole('button', { name: '취소' })).toBeFocused()
+
+  const bounds = await dialog.boundingBox()
+  expect(bounds).toEqual({ x: 660, y: 354, width: 600, height: 300 })
+
+  if (process.env.CAPTURE_VISUAL_ARTIFACT === '1') {
+    await page.screenshot({
+      path: '.omx/artifacts/visual-ralph/notice-create-leave-modal/actual.png',
+    })
+  }
+
+  await dialog.getByRole('button', { name: '취소' }).click()
+
+  await expect(dialog).toBeHidden()
+  await expect(page).toHaveURL(/\/notices\/list\/create$/)
+  await expect(title).toHaveValue('작성 중인 공지')
+  await expect(backLink).toBeFocused()
+})
+
+test('이탈 확인 모달에서 확인하면 목록으로 이동한다', async ({ page }) => {
+  await page.getByLabel(/제목/).fill('나갈 공지')
+  await page.getByRole('link', { name: '뒤로가기' }).click()
+
+  const dialog = page.getByRole('alertdialog', {
+    name: '정말 나가시겠습니까?',
+  })
+  await dialog.getByRole('button', { name: '확인' }).click()
+
+  await expect(page).toHaveURL(/\/notices\/list$/)
+})
+
+test('작성 중 사이드바로 이동하려 해도 이탈을 확인한다', async ({
+  page,
+}) => {
+  await page.getByLabel(/제목/).fill('경로를 보호할 공지')
+  await page.getByRole('button', { name: '사이드바 열기' }).click()
+  await page.getByRole('link', { name: '자료실' }).click()
+
+  const dialog = page.getByRole('alertdialog', {
+    name: '정말 나가시겠습니까?',
+  })
+  await expect(dialog).toBeVisible()
+  await dialog.getByRole('button', { name: '취소' }).click()
+  await expect(page).toHaveURL(/\/notices\/list\/create$/)
+})
+
+test('목록에서 생성 페이지로 진입한 뒤 브라우저 뒤로가기를 해도 이탈을 확인한다', async ({
+  page,
+}) => {
+  await page.goto('/notices/list')
+  await page.getByRole('link', { name: '공지 생성하기' }).click()
+  await page.getByLabel(/제목/).fill('히스토리를 보호할 공지')
+  await page.evaluate(() => history.back())
+
+  const dialog = page.getByRole('alertdialog', {
+    name: '정말 나가시겠습니까?',
+  })
+  await expect(dialog).toBeVisible()
+  await dialog.getByRole('button', { name: '취소' }).click()
+  await expect(page).toHaveURL(/\/notices\/list\/create$/)
+})
+
 test('제목과 내용 입력은 포커스 테두리를 표시하지 않는다', async ({ page }) => {
   const title = page.getByLabel(/제목/)
   const content = page.getByLabel(/내용/)

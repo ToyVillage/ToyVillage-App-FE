@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { RemoveIconButton } from './RemoveIconButton'
 
@@ -9,11 +9,21 @@ interface AttachedFile {
   id: string
 }
 
-export function NoticeAttachmentField() {
+interface NoticeAttachmentFieldProps {
+  onFilesChange?: (hasFiles: boolean) => void
+}
+
+export function NoticeAttachmentField({
+  onFilesChange,
+}: NoticeAttachmentFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [files, setFiles] = useState<AttachedFile[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+
+  useEffect(() => {
+    onFilesChange?.(files.length > 0)
+  }, [files.length, onFilesChange])
 
   function addFiles(fileList: FileList | File[]) {
     const incomingFiles = Array.from(fileList)

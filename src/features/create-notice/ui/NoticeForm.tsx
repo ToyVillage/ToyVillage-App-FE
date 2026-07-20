@@ -1,7 +1,6 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
 import {
   createMockNotice,
   noticeCategories,
@@ -21,8 +20,12 @@ const validationMessages: Record<FieldName, string> = {
 
 const initialCategories = noticeCategories.slice(0, 3)
 
-export function NoticeForm() {
-  const navigate = useNavigate()
+interface NoticeFormProps {
+  onCreated: () => void
+  onDirtyChange: (isDirty: boolean) => void
+}
+
+export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
   const queryClient = useQueryClient()
   const submittingRef = useRef(false)
   const teamAddButtonRef = useRef<HTMLButtonElement>(null)
@@ -33,8 +36,24 @@ export function NoticeForm() {
   const [teamDialogOpen, setTeamDialogOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [hasAttachments, setHasAttachments] = useState(false)
   const [validationError, setValidationError] = useState<FieldName | null>(null)
   const mutation = useMutation({ mutationFn: createMockNotice })
+
+  useEffect(() => {
+    const categoriesChanged =
+      categories.length !== initialCategories.length ||
+      categories.some((item, index) => item !== initialCategories[index])
+    const isDirty = Boolean(
+      title ||
+        content ||
+        category !== initialCategories[0] ||
+        categoriesChanged ||
+        hasAttachments,
+    )
+
+    onDirtyChange(isDirty)
+  }, [category, categories, content, hasAttachments, onDirtyChange, title])
 
   const handleConfirm = useCallback(() => {
     const error = validationError
@@ -71,7 +90,7 @@ export function NoticeForm() {
     mutation.mutate(input, {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: ['notices'] })
-        navigate('/notices/list')
+        onCreated()
       },
       onError: () => {
         submittingRef.current = false
@@ -154,7 +173,7 @@ export function NoticeForm() {
         />
       </ContentCard>
 
-      <NoticeAttachmentField />
+      <NoticeAttachmentField onFilesChange={setHasAttachments} />
 
       {mutation.isError && (
         <SubmitStatus role="status">

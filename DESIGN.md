@@ -19,6 +19,7 @@
   - Figma `2114:1329` 휴관일 생성 기본 화면
   - Figma `2413:2955`, `2413:3046` 휴관일 생성 검증 오류 화면
   - Figma `2456:5047` 날짜별 영업시간 수정 화면
+  - Figma `2431:2235` 작성 중 이탈 확인 모달
   - `src/app/App.tsx`
   - `src/shared/theme/tokens.ts`
   - `scripts/map-tokens.mjs`
@@ -79,7 +80,7 @@
 ## Components
 
 - Existing components to reuse: `LinkButton`, `DataTable`, 사이드바, 기존 페이지 헤더와 테마 토큰
-- New/changed components: 기능별 spec에서 필요한 폼, 캘린더, 상태 피드백을 정의한다. 공지 생성은 분류·제목·내용을 다루는 feature 폼으로 소유하고, 휴관 일정 생성·수정은 같은 날짜·제목 폼을 모드만 바꿔 재사용한다. 구조가 동일해질 때만 `shared/ui`로 승격한다.
+- New/changed components: 기능별 spec에서 필요한 폼, 캘린더, 상태 피드백을 정의한다. 공지 생성은 분류·제목·내용과 Figma `2431:2235` 작성 중 이탈 확인을 feature 내부에서 소유하고, 휴관 일정 생성·수정은 같은 날짜·제목 폼을 모드만 바꿔 재사용한다. 구조가 동일해질 때만 `shared/ui`로 승격한다.
 - Variants and states: 기본, hover, focus-visible, disabled, loading, error, success를 역할에 맞게 제공한다.
 - Token/component ownership: `tokens.ts`는 제품 의미가 있는 solid color와 공통 font family만 소유한다. px·rgba·spacing·radius·font-size·layout·shadow는 사용하는 Emotion 컴포넌트가 소유한다. 공통 표현은 `shared/ui`, 도메인 표현은 `entities`, 사용자 행동은 `features`, 화면 조합은 `pages`가 소유한다.
 

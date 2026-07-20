@@ -1,8 +1,41 @@
+import { useCallback, useRef, useState } from 'react'
 import styled from '@emotion/styled'
-import { Link } from 'react-router-dom'
-import { NoticeForm } from '@/features/create-notice'
+import { Link, useBeforeUnload, useBlocker, useNavigate } from 'react-router-dom'
+import {
+  LeaveConfirmationDialog,
+  NoticeForm,
+} from '@/features/create-notice'
 
 export function CreateNoticePage() {
+  const navigate = useNavigate()
+  const allowNavigationRef = useRef(false)
+  const [isDirty, setIsDirty] = useState(false)
+  const blocker = useBlocker(
+    useCallback(
+      ({ currentLocation, nextLocation }) =>
+        !allowNavigationRef.current &&
+        isDirty &&
+        currentLocation.pathname !== nextLocation.pathname,
+      [isDirty],
+    ),
+  )
+
+  useBeforeUnload(
+    useCallback(
+      (event) => {
+        if (!isDirty || allowNavigationRef.current) return
+        event.preventDefault()
+        event.returnValue = ''
+      },
+      [isDirty],
+    ),
+  )
+
+  const handleCreated = useCallback(() => {
+    allowNavigationRef.current = true
+    navigate('/notices/list')
+  }, [navigate])
+
   return (
     <Page>
       <Content>
@@ -12,8 +45,17 @@ export function CreateNoticePage() {
           </BackIcon>
           뒤로가기
         </BackLink>
-        <NoticeForm />
+        <NoticeForm
+          onCreated={handleCreated}
+          onDirtyChange={setIsDirty}
+        />
       </Content>
+      {blocker.state === 'blocked' && (
+        <LeaveConfirmationDialog
+          onCancel={blocker.reset}
+          onConfirm={blocker.proceed}
+        />
+      )}
     </Page>
   )
 }
