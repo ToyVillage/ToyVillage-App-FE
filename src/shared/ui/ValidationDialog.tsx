@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import styled from '@emotion/styled'
 
@@ -11,6 +11,7 @@ export function ValidationDialog({
   message,
   onConfirm,
 }: ValidationDialogProps) {
+  const messageId = useId()
   const confirmRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -41,12 +42,8 @@ export function ValidationDialog({
 
   return createPortal(
     <Overlay>
-      <Dialog
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="close-schedule-validation-message"
-      >
-        <Message id="close-schedule-validation-message">{message}</Message>
+      <Dialog role="alertdialog" aria-modal="true" aria-labelledby={messageId}>
+        <Message id={messageId}>{message}</Message>
         <ConfirmButton ref={confirmRef} type="button" onClick={onConfirm}>
           확인
         </ConfirmButton>

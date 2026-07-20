@@ -1,5 +1,7 @@
+import { useEffect, useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import searchIcon from './assets/search.svg'
+import filterIcon from './assets/filter.svg'
 import chevronIcon from './assets/chevron-left.svg'
 
 // 분류(pill) / 제목 / 날짜 3컬럼 테이블. 도메인 무관 프레젠테이션 컴포넌트.
@@ -20,9 +22,17 @@ export interface DataTableSearch {
   ariaLabel?: string
 }
 
+export type DataTableSortValue = 'newest' | 'oldest'
+
+export interface DataTableSort {
+  value: DataTableSortValue
+  onChange: (value: DataTableSortValue) => void
+  ariaLabel?: string
+}
+
 // 카드 하단 페이지네이션. 실제 슬라이싱은 페이지가 담당하고 여기서는 표현/이동만.
 export interface DataTablePagination {
-  page: number // 1-based 현재 페이지
+  page: number
   pageCount: number
   onChange: (page: number) => void
 }
@@ -32,6 +42,7 @@ interface DataTableProps {
   onRowClick?: (id: string) => void
   rowTestId?: string
   search?: DataTableSearch
+  sort?: DataTableSort
   pagination?: DataTablePagination
   emptyLabel?: string
 }
@@ -41,12 +52,36 @@ export function DataTable({
   onRowClick,
   rowTestId,
   search,
+  sort,
   pagination,
   emptyLabel,
 }: DataTableProps) {
+  const [sortOpen, setSortOpen] = useState(false)
+  const sortControlRef = useRef<HTMLDivElement>(null)
   const pageNumbers = pagination
     ? Array.from({ length: pagination.pageCount }, (_, i) => i + 1)
     : []
+
+  useEffect(() => {
+    if (!sortOpen) return
+
+    function closeOnOutsidePointer(event: PointerEvent) {
+      if (!sortControlRef.current?.contains(event.target as Node)) {
+        setSortOpen(false)
+      }
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') setSortOpen(false)
+    }
+
+    document.addEventListener('pointerdown', closeOnOutsidePointer)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePointer)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [sortOpen])
 
   return (
     <Table>
@@ -56,19 +91,62 @@ export function DataTable({
         <HeadCell $width="date">날짜</HeadCell>
       </Header>
 
-      {search && (
-        <SearchRow>
-          <SearchBar>
-            <SearchIcon src={searchIcon} alt="" aria-hidden="true" />
-            <SearchInput
-              type="search"
-              value={search.value}
-              placeholder={search.placeholder}
-              aria-label={search.ariaLabel ?? '검색'}
-              onChange={(e) => search.onChange(e.target.value)}
-            />
-          </SearchBar>
-        </SearchRow>
+      {(search || sort) && (
+        <ControlRow>
+          <ControlBar>
+            {search && (
+              <>
+                <SearchIcon src={searchIcon} alt="" aria-hidden="true" />
+                <SearchInput
+                  type="search"
+                  value={search.value}
+                  placeholder={search.placeholder}
+                  aria-label={search.ariaLabel ?? '검색'}
+                  onChange={(e) => search.onChange(e.target.value)}
+                />
+              </>
+            )}
+            {sort && (
+              <SortControl ref={sortControlRef}>
+                <SortButton
+                  type="button"
+                  aria-label={sort.ariaLabel ?? '날짜 정렬'}
+                  aria-haspopup="menu"
+                  aria-expanded={sortOpen}
+                  onClick={() => setSortOpen((open) => !open)}
+                >
+                  <FilterIcon src={filterIcon} alt="" aria-hidden="true" />
+                </SortButton>
+                {sortOpen && (
+                  <SortMenu role="menu" aria-label="날짜 정렬 옵션">
+                    <SortOption
+                      type="button"
+                      role="menuitemradio"
+                      aria-checked={sort.value === 'newest'}
+                      onClick={() => {
+                        sort.onChange('newest')
+                        setSortOpen(false)
+                      }}
+                    >
+                      최신순
+                    </SortOption>
+                    <SortOption
+                      type="button"
+                      role="menuitemradio"
+                      aria-checked={sort.value === 'oldest'}
+                      onClick={() => {
+                        sort.onChange('oldest')
+                        setSortOpen(false)
+                      }}
+                    >
+                      오래된순
+                    </SortOption>
+                  </SortMenu>
+                )}
+              </SortControl>
+            )}
+          </ControlBar>
+        </ControlRow>
       )}
 
       {rows.length === 0 && emptyLabel ? (
@@ -162,12 +240,12 @@ const Header = styled.div`
   background: ${({ theme }) => theme.colors.tableHeader};
 `
 
-// 헤더행과 데이터행 사이, 카드 안에 40px 인셋으로 놓이는 검색바 컨테이너.
-const SearchRow = styled.div`
+const ControlRow = styled.div`
   padding: 24px 40px 8px;
 `
 
-const SearchBar = styled.div`
+const ControlBar = styled.div`
+  position: relative;
   display: flex;
   height: 50px;
   align-items: center;
@@ -202,6 +280,72 @@ const SearchIcon = styled.img`
   flex: 0 0 20px;
 `
 
+const FilterIcon = styled.img`
+  width: 22px;
+  height: 20px;
+  flex: 0 0 22px;
+`
+
+const SortControl = styled.div`
+  position: relative;
+  width: 22px;
+  height: 20px;
+  flex: 0 0 22px;
+`
+
+const SortButton = styled.button`
+  display: flex;
+  width: 22px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.accent};
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+`
+
+const SortMenu = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 37px;
+  right: 0;
+  display: flex;
+  width: 120px;
+  height: 156px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: ${({ theme }) => theme.colors.surface};
+  box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+`
+
+const SortOption = styled.button`
+  flex: 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text};
+  font: inherit;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    outline: 0;
+    background: ${({ theme }) => theme.colors.background};
+  }
+`
+
 const EmptyRow = styled.div`
   display: flex;
   min-height: 92px;
@@ -212,8 +356,6 @@ const EmptyRow = styled.div`
   font-weight: 500;
 `
 
-// 데이터행 사이에만, 카드 폭 전체가 아닌 40px 인셋 구분선(Figma list 컴포넌트).
-// & + & → 첫 행(헤더/검색바 다음)에는 선이 없고 연속된 행 사이에만 그어진다.
 const Row = styled.div`
   position: relative;
   display: flex;

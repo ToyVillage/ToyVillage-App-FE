@@ -1,4 +1,9 @@
-import { Navigate, Routes, Route } from 'react-router-dom'
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  RouterProvider,
+} from 'react-router-dom'
 import { HomePage } from '@/pages/home'
 import {
   CreateNoticePage,
@@ -19,45 +24,59 @@ import {
 import { NoticeReservationsPage } from '@/pages/notices/reservations'
 import { Sidebar, SidebarToggleButton } from '@/features/sidebar'
 
-// 라우트 정의(app 레이어). 페이지는 pages 레이어에서 가져온다.
-export function App() {
+function AppLayout() {
   return (
     <>
       <SidebarToggleButton />
       <Sidebar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route
-          path="/notices"
-          element={<Navigate to="/notices/list" replace />}
-        />
-        <Route path="/notices/list" element={<NoticeListPage />} />
-        <Route path="/notices/list/create" element={<CreateNoticePage />} />
-        <Route path="/notices/list/:id" element={<NoticeDetailPage />} />
-        <Route path="/notices/guide" element={<NoticeGuidePage />} />
-        <Route
-          path="/notices/guide/create"
-          element={<CreateCloseSchedulePage />}
-        />
-        <Route
-          path="/notices/guide/:id/edit"
-          element={<EditCloseSchedulePage />}
-        />
-        <Route
-          path="/notices/guide/hours/:date"
-          element={<OperatingHoursPage />}
-        />
-        <Route path="/notices/resources" element={<ResourceListPage />} />
-        <Route
-          path="/notices/resources/create"
-          element={<CreateResourcePage />}
-        />
-        <Route path="/notices/resources/:id" element={<ResourceDetailPage />} />
-        <Route
-          path="/notices/reservations"
-          element={<NoticeReservationsPage />}
-        />
-      </Routes>
+      <Outlet />
     </>
   )
+}
+
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
+      { path: '/', element: <HomePage /> },
+      {
+        path: '/notices',
+        element: <Navigate to="/notices/list" replace />,
+      },
+      { path: '/notices/list', element: <NoticeListPage /> },
+      { path: '/notices/list/create', element: <CreateNoticePage /> },
+      { path: '/notices/list/:id', element: <NoticeDetailPage /> },
+      { path: '/notices/guide', element: <NoticeGuidePage /> },
+      {
+        path: '/notices/guide/create',
+        element: <CreateCloseSchedulePage />,
+      },
+      {
+        path: '/notices/guide/:id/edit',
+        element: <EditCloseSchedulePage />,
+      },
+      {
+        path: '/notices/guide/hours/:date',
+        element: <OperatingHoursPage />,
+      },
+      { path: '/notices/resources', element: <ResourceListPage /> },
+      {
+        path: '/notices/resources/create',
+        element: <CreateResourcePage />,
+      },
+      {
+        path: '/notices/resources/:id',
+        element: <ResourceDetailPage />,
+      },
+      {
+        path: '/notices/reservations',
+        element: <NoticeReservationsPage />,
+      },
+    ],
+  },
+])
+
+// Data router를 사용해 생성 화면의 이탈 시도를 일관되게 차단한다.
+export function App() {
+  return <RouterProvider router={router} />
 }
