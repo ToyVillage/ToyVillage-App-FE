@@ -15,9 +15,6 @@ import type { DataTableSortValue } from '@/shared/ui'
 // 한 페이지에 노출할 공지 수(Figma list 컴포넌트 기준). 자료실과 동일.
 const PAGE_SIZE = 4
 
-// 한 페이지에 노출할 공지 수(Figma list 컴포넌트 기준). 자료실과 동일.
-const PAGE_SIZE = 4
-
 export function NoticeListPage() {
   const navigate = useNavigate()
   const [active, setActive] = useState('전체')
