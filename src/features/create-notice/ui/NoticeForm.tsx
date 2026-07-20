@@ -46,10 +46,10 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
       categories.some((item, index) => item !== initialCategories[index])
     const isDirty = Boolean(
       title ||
-        content ||
-        category !== initialCategories[0] ||
-        categoriesChanged ||
-        hasAttachments,
+      content ||
+      category !== initialCategories[0] ||
+      categoriesChanged ||
+      hasAttachments,
     )
 
     onDirtyChange(isDirty)
@@ -135,6 +135,7 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
               {option !== '전체' && (
                 <CategoryRemove
                   type="button"
+                  data-hover-reveal="true"
                   aria-label={`${categoryDisplayName(option)} 삭제`}
                   onClick={() => {
                     setCategories((current) =>
@@ -326,6 +327,32 @@ const CategoryOptions = styled.div`
 const CategoryOption = styled.div`
   position: relative;
   display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.background};
+
+  &:hover > [data-hover-reveal='true'],
+  &:focus-within > [data-hover-reveal='true'] {
+    position: static;
+    width: 20px;
+    height: 20px;
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  &:hover span[data-has-remove='true'],
+  &:focus-within span[data-has-remove='true'] {
+    padding-right: 8px;
+  }
+
+  @media (hover: none) {
+    span[data-has-remove='true'] {
+      padding-right: 8px;
+    }
+  }
 `
 
 const CategorySelectLabel = styled.label`
@@ -356,23 +383,16 @@ const CategoryPill = styled.span`
   padding: 8px 18px;
   border: 1px solid transparent;
   border-radius: 999px;
-  background: ${({ theme }) => theme.colors.background};
+  background: transparent;
   color: ${({ theme }) => theme.colors.textStrong};
   font-size: 20px;
   font-weight: 500;
   line-height: 1.2;
-
-  &[data-has-remove='true'] {
-    padding-right: 46px;
-  }
 `
 
 const CategoryRemove = styled(RemoveIconButton)`
-  position: absolute;
   z-index: 2;
-  top: 50%;
-  right: 14px;
-  transform: translateY(-50%);
+  margin-right: 18px;
 `
 
 const TeamAddButton = styled.button`

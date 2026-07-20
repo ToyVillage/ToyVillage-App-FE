@@ -78,9 +78,7 @@ test('이탈 확인 모달에서 확인하면 목록으로 이동한다', async 
   await expect(page).toHaveURL(/\/notices\/list$/)
 })
 
-test('작성 중 사이드바로 이동하려 해도 이탈을 확인한다', async ({
-  page,
-}) => {
+test('작성 중 사이드바로 이동하려 해도 이탈을 확인한다', async ({ page }) => {
   await page.getByLabel(/제목/).fill('경로를 보호할 공지')
   await page.getByRole('button', { name: '사이드바 열기' }).click()
   await page.getByRole('link', { name: '자료실' }).click()
@@ -277,7 +275,7 @@ test('팀을 선택해도 핑크로 강조하지 않는다', async ({ page }) =>
   await team.check()
 
   await expect(team).toBeChecked()
-  await expect(page.getByText('팀 이름1', { exact: true })).toHaveCSS(
+  await expect(team.locator('..').locator('..')).toHaveCSS(
     'background-color',
     'rgb(245, 245, 247)',
   )
@@ -288,7 +286,9 @@ test('선택한 팀을 삭제하면 전체 분류로 돌아간다', async ({ pag
   await page.getByLabel(/내용/).fill('공지 내용')
   await page.getByRole('radio', { name: '팀 이름1' }).check()
 
-  await page.getByRole('button', { name: '팀 이름1 삭제' }).click()
+  const removeButton = page.getByRole('button', { name: '팀 이름1 삭제' })
+  await removeButton.locator('..').hover()
+  await removeButton.click()
 
   await expect(page.getByRole('radio', { name: '팀 이름1' })).toHaveCount(0)
   await expect(page.getByRole('radio', { name: '전체' })).toBeChecked()
@@ -337,7 +337,10 @@ test('모달에 입력한 이름으로 팀을 추가한다', async ({ page }) =>
 
   await expect(page.getByRole('dialog', { name: '팀 추가하기' })).toBeHidden()
   await expect(page.getByRole('radio', { name: '새 팀' })).toBeChecked()
-  await expect(page.getByRole('button', { name: '새 팀 삭제' })).toBeVisible()
+  const removeButton = page.getByRole('button', { name: '새 팀 삭제' })
+  await expect(removeButton).toHaveCSS('opacity', '0')
+  await removeButton.locator('..').hover()
+  await expect(removeButton).toHaveCSS('opacity', '1')
 })
 
 test('S11: 첨부파일 영역은 빈 첨부 카드와 업로드 dropzone을 표시한다', async ({
@@ -365,7 +368,7 @@ test('S11: 첨부파일 영역은 빈 첨부 카드와 업로드 dropzone을 표
   expect(emptyCardBounds!.y).toBeLessThan(uploadBounds!.y)
 })
 
-test('S12: 여러 파일을 선택하면 파일명 chip과 삭제 control을 표시한다', async ({
+test('S12: 분류와 첨부파일 삭제 control은 hover 시 공간과 함께 표시한다', async ({
   page,
 }) => {
   await uploadInput(page).setInputFiles([
@@ -375,26 +378,42 @@ test('S12: 여러 파일을 선택하면 파일명 chip과 삭제 control을 표
 
   await expect(attachmentGroup(page).getByText('운영 안내.pdf')).toBeVisible()
   await expect(attachmentGroup(page).getByText('행사 이미지.png')).toBeVisible()
-  await expect(
-    page.getByRole('button', { name: '운영 안내.pdf 삭제' }),
-  ).toBeVisible()
-  await expect(
-    page.getByRole('button', { name: '행사 이미지.png 삭제' }),
-  ).toBeVisible()
-
-  const categoryRemove = page.getByRole('button', { name: '팀 이름1 삭제' })
-  const attachmentRemove = page.getByRole('button', {
-    name: '운영 안내.pdf 삭제',
-  })
+  const categoryRemove = page.locator('button[aria-label="팀 이름1 삭제"]')
+  const attachmentRemove = page.locator(
+    'button[aria-label="운영 안내.pdf 삭제"]',
+  )
 
   for (const removeButton of [categoryRemove, attachmentRemove]) {
-    await expect(removeButton).toHaveCSS('width', '20px')
-    await expect(removeButton).toHaveCSS('height', '20px')
+    const parent = removeButton.locator('..')
+
+    await expect(removeButton).toHaveCSS('position', 'absolute')
+    await expect(removeButton).toHaveCSS('opacity', '0')
     await expect(removeButton).toHaveCSS('color', 'rgb(132, 132, 145)')
     await expect(removeButton).toHaveCSS('border-style', 'none')
 
+    const initialParentBounds = await parent.boundingBox()
+    expect(initialParentBounds).not.toBeNull()
+
+    await parent.hover()
+    await expect(removeButton).toHaveCSS('position', 'static')
+    await expect(removeButton).toHaveCSS('opacity', '1')
+    await expect(removeButton).toHaveCSS('width', '20px')
+    await expect(removeButton).toHaveCSS('height', '20px')
+
+    const hoveredParentBounds = await parent.boundingBox()
+    expect(hoveredParentBounds).not.toBeNull()
+    expect(hoveredParentBounds!.width).toBeGreaterThan(
+      initialParentBounds!.width,
+    )
+    expect(hoveredParentBounds!.height).toBe(initialParentBounds!.height)
+
     await removeButton.hover()
     await expect(removeButton).toHaveCSS('color', 'rgb(255, 49, 49)')
+
+    await page.mouse.move(0, 0)
+    await expect(removeButton).toHaveCSS('opacity', '0')
+    await removeButton.focus()
+    await expect(removeButton).toHaveCSS('opacity', '1')
   }
 })
 
@@ -403,7 +422,10 @@ test('S13: 첨부 파일을 제거하면 빈 첨부 카드로 돌아간다', asy
     filePayload('삭제할 파일.txt', 'text/plain'),
   ])
 
-  await page.getByRole('button', { name: '삭제할 파일.txt 삭제' }).click()
+  const removeButton = page.locator('button[aria-label="삭제할 파일.txt 삭제"]')
+  await removeButton.locator('..').hover()
+  await expect(removeButton).toHaveCSS('opacity', '1')
+  await removeButton.click()
 
   await expect(attachmentGroup(page).getByText('삭제할 파일.txt')).toHaveCount(
     0,
