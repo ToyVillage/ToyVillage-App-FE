@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import styled from '@emotion/styled'
+import { RemoveIconButton } from './RemoveIconButton'
 
 const maxFileSize = 50 * 1024 * 1024
 
@@ -83,15 +84,11 @@ export function NoticeAttachmentField() {
                         <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" />
                       </DownloadIcon>
                     </IconButton>
-                    <RemoveButton
+                    <RemoveIconButton
                       type="button"
                       aria-label={`${attachedFile.file.name} 삭제`}
                       onClick={() => handleRemove(attachedFile.id)}
-                    >
-                      <RemoveIcon viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="m8 8 8 8m0-8-8 8" />
-                      </RemoveIcon>
-                    </RemoveButton>
+                    />
                   </FileChip>
                 )
               })}
@@ -256,21 +253,6 @@ const DownloadIcon = styled.svg`
   stroke-width: 2;
 `
 
-const RemoveButton = styled(IconButton)`
-  border: 1px solid ${({ theme }) => theme.colors.textFaint};
-  border-radius: 50%;
-  color: ${({ theme }) => theme.colors.textGuide};
-`
-
-const RemoveIcon = styled.svg`
-  width: 14px;
-  height: 14px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-width: 1.5;
-`
-
 const FileInput = styled.input`
   position: absolute;
   width: 1px;
@@ -297,8 +279,7 @@ const DropZone = styled.button`
   cursor: pointer;
   font: inherit;
 
-  &[data-dragging='true'],
-  &:hover {
+  &[data-dragging='true'] {
     border-color: ${({ theme }) => theme.colors.primary};
     background: ${({ theme }) => theme.colors.primaryBg};
   }

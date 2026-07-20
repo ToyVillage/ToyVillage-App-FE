@@ -275,6 +275,12 @@ test('S11: 첨부파일 영역은 빈 첨부 카드와 업로드 dropzone을 표
   await expect(emptyCard).toBeVisible()
   await expect(emptyCard).toBeEmpty()
   await expect(upload).toBeVisible()
+  await expect(upload).toHaveCSS('background-color', 'rgb(225, 225, 225)')
+  await expect(upload).toHaveCSS('border-color', 'rgb(132, 132, 145)')
+
+  await upload.hover()
+  await expect(upload).toHaveCSS('background-color', 'rgb(225, 225, 225)')
+  await expect(upload).toHaveCSS('border-color', 'rgb(132, 132, 145)')
 
   const emptyCardBounds = await emptyCard.boundingBox()
   const uploadBounds = await upload.boundingBox()
@@ -299,6 +305,21 @@ test('S12: 여러 파일을 선택하면 파일명 chip과 삭제 control을 표
   await expect(
     page.getByRole('button', { name: '행사 이미지.png 삭제' }),
   ).toBeVisible()
+
+  const categoryRemove = page.getByRole('button', { name: '팀 이름1 삭제' })
+  const attachmentRemove = page.getByRole('button', {
+    name: '운영 안내.pdf 삭제',
+  })
+
+  for (const removeButton of [categoryRemove, attachmentRemove]) {
+    await expect(removeButton).toHaveCSS('width', '20px')
+    await expect(removeButton).toHaveCSS('height', '20px')
+    await expect(removeButton).toHaveCSS('color', 'rgb(132, 132, 145)')
+    await expect(removeButton).toHaveCSS('border-style', 'none')
+
+    await removeButton.hover()
+    await expect(removeButton).toHaveCSS('color', 'rgb(255, 49, 49)')
+  }
 })
 
 test('S13: 첨부 파일을 제거하면 빈 첨부 카드로 돌아간다', async ({ page }) => {

@@ -9,6 +9,7 @@ import {
 } from '@/entities/notice'
 import { ValidationDialog } from '@/shared/ui'
 import { NoticeAttachmentField } from './NoticeAttachmentField'
+import { RemoveIconButton } from './RemoveIconButton'
 import { TeamAddDialog } from './TeamAddDialog'
 
 type FieldName = keyof CreateNoticeInput
@@ -130,9 +131,7 @@ export function NoticeForm() {
                     )
                     if (category === option) setCategory('')
                   }}
-                >
-                  ×
-                </CategoryRemove>
+                />
               )}
             </CategoryOption>
           ))}
@@ -358,37 +357,12 @@ const CategoryPill = styled.span`
   }
 `
 
-const CategoryRemove = styled.button`
+const CategoryRemove = styled(RemoveIconButton)`
   position: absolute;
   z-index: 2;
   top: 50%;
   right: 14px;
-  display: inline-flex;
-  width: 20px;
-  height: 20px;
-  padding: 0;
   transform: translateY(-50%);
-  align-items: center;
-  justify-content: center;
-  border: 1px solid ${({ theme }) => theme.colors.textFaint};
-  border-radius: 50%;
-  background: transparent;
-  color: ${({ theme }) => theme.colors.textGuide};
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.danger};
-    color: ${({ theme }) => theme.colors.danger};
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.textGuide};
-    outline-offset: 2px;
-  }
 `
 
 const TeamAddButton = styled.button`
