@@ -91,18 +91,22 @@ export function DataTable({
         <HeadCell $width="date">날짜</HeadCell>
       </Header>
 
-      {search && (
-        <SearchRow>
-          <SearchBar>
-            <SearchIcon src={searchIcon} alt="" aria-hidden="true" />
-            <SearchInput
-              type="search"
-              value={search.value}
-              placeholder={search.placeholder}
-              aria-label={search.ariaLabel ?? '검색'}
-              onChange={(e) => search.onChange(e.target.value)}
-            />
-            {sort ? (
+      {(search || sort) && (
+        <ControlRow>
+          <ControlBar>
+            {search && (
+              <>
+                <SearchIcon src={searchIcon} alt="" aria-hidden="true" />
+                <SearchInput
+                  type="search"
+                  value={search.value}
+                  placeholder={search.placeholder}
+                  aria-label={search.ariaLabel ?? '검색'}
+                  onChange={(e) => search.onChange(e.target.value)}
+                />
+              </>
+            )}
+            {sort && (
               <SortControl ref={sortControlRef}>
                 <SortButton
                   type="button"
@@ -140,11 +144,9 @@ export function DataTable({
                   </SortMenu>
                 )}
               </SortControl>
-            ) : (
-              <FilterIcon src={filterIcon} alt="" aria-hidden="true" />
             )}
-          </SearchBar>
-        </SearchRow>
+          </ControlBar>
+        </ControlRow>
       )}
 
       {rows.length === 0 && emptyLabel ? (
@@ -238,11 +240,11 @@ const Header = styled.div`
   background: ${({ theme }) => theme.colors.tableHeader};
 `
 
-const SearchRow = styled.div`
+const ControlRow = styled.div`
   padding: 24px 40px 8px;
 `
 
-const SearchBar = styled.div`
+const ControlBar = styled.div`
   position: relative;
   display: flex;
   height: 50px;
