@@ -11,21 +11,48 @@ import {
 import { CreateNoticeButton } from '@/features/create-notice'
 import { CategoryTabs } from './ui/CategoryTabs'
 
+// 한 페이지에 노출할 공지 수(Figma list 컴포넌트 기준). 자료실과 동일.
+const PAGE_SIZE = 4
+
 export function NoticeListPage() {
   const navigate = useNavigate()
   const [active, setActive] = useState('전체')
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
   const { data: allNotices = mockNotices } = useQuery({
     queryKey: ['notices'],
     queryFn: getMockNotices,
     placeholderData: mockNotices,
   })
 
-  const notices = useMemo(
-    () =>
+  const filtered = useMemo(() => {
+    const byCategory =
       active === '전체'
         ? allNotices
-        : allNotices.filter((notice) => notice.category === active),
-    [active, allNotices],
+        : allNotices.filter((notice) => notice.category === active)
+
+    const keyword = query.trim().toLowerCase()
+    if (!keyword) return byCategory
+    return byCategory.filter((n) =>
+      `${n.title} ${n.category} ${n.date}`.toLowerCase().includes(keyword),
+    )
+  }, [active, allNotices, query])
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+
+  // 탭·검색이 바뀌면 첫 페이지로 되돌린다. 렌더 중 상태 보정(effect 불필요).
+  const filterKey = `${active} ${query}`
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey)
+  if (prevFilterKey !== filterKey) {
+    setPrevFilterKey(filterKey)
+    setPage(1)
+  }
+  const currentPage = Math.min(page, pageCount)
+
+  const notices = useMemo(
+    () =>
+      filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [filtered, currentPage],
   )
 
   return (
@@ -48,6 +75,16 @@ export function NoticeListPage() {
         <NoticeTable
           notices={notices}
           onRowClick={(id) => navigate(`/notices/list/${id}`)}
+          search={{
+            value: query,
+            onChange: setQuery,
+            placeholder: '제목을 입력해주세요',
+            ariaLabel: '공지 검색',
+          }}
+          pagination={{ page: currentPage, pageCount, onChange: setPage }}
+          emptyLabel={
+            query.trim() ? '검색결과가 없습니다' : '표시할 공지가 없습니다'
+          }
         />
       </Content>
     </Page>
