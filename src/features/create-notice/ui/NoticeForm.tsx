@@ -12,10 +12,9 @@ import { NoticeAttachmentField } from './NoticeAttachmentField'
 import { RemoveIconButton } from './RemoveIconButton'
 import { TeamAddDialog } from './TeamAddDialog'
 
-type FieldName = keyof CreateNoticeInput
+type FieldName = Exclude<keyof CreateNoticeInput, 'category'>
 
 const validationMessages: Record<FieldName, string> = {
-  category: '분류를 선택해 주세요',
   title: '제목을 입력해 주세요',
   content: '내용을 입력해 주세요',
 }
@@ -26,11 +25,10 @@ export function NoticeForm() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const submittingRef = useRef(false)
-  const categoryRef = useRef<HTMLInputElement>(null)
   const teamAddButtonRef = useRef<HTMLButtonElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const contentRef = useRef<HTMLTextAreaElement>(null)
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState(initialCategories[0])
   const [categories, setCategories] = useState(initialCategories)
   const [teamDialogOpen, setTeamDialogOpen] = useState(false)
   const [title, setTitle] = useState('')
@@ -43,11 +41,6 @@ export function NoticeForm() {
     setValidationError(null)
 
     requestAnimationFrame(() => {
-      if (error === 'category') {
-        categoryRef.current?.focus()
-        return
-      }
-
       if (error === 'title') {
         titleRef.current?.focus()
         return
@@ -105,11 +98,10 @@ export function NoticeForm() {
       <CategoryCard aria-required="true">
         <CategoryLegend>분류</CategoryLegend>
         <CategoryOptions>
-          {categories.map((option, index) => (
+          {categories.map((option) => (
             <CategoryOption key={option}>
               <CategorySelectLabel>
                 <CategoryRadio
-                  ref={index === 0 ? categoryRef : undefined}
                   type="radio"
                   name="notice-category"
                   value={option}
@@ -129,7 +121,7 @@ export function NoticeForm() {
                     setCategories((current) =>
                       current.filter((item) => item !== option),
                     )
-                    if (category === option) setCategory('')
+                    if (category === option) setCategory(initialCategories[0])
                   }}
                 />
               )}
@@ -205,7 +197,6 @@ export function NoticeForm() {
 
 function validate(input: CreateNoticeInput): FieldName | null {
   if (!input.title) return 'title'
-  if (!input.category) return 'category'
   if (!input.content) return 'content'
   return null
 }
