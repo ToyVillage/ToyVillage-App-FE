@@ -10,6 +10,7 @@ import {
 } from '@/entities/notice'
 import { CreateNoticeButton } from '@/features/create-notice'
 import { CategoryTabs } from './ui/CategoryTabs'
+import type { DataTableSortValue } from '@/shared/ui'
 
 // 한 페이지에 노출할 공지 수(Figma list 컴포넌트 기준). 자료실과 동일.
 const PAGE_SIZE = 4
@@ -18,6 +19,7 @@ export function NoticeListPage() {
   const navigate = useNavigate()
   const [active, setActive] = useState('전체')
   const [query, setQuery] = useState('')
+  const [sort, setSort] = useState<DataTableSortValue>('newest')
   const [page, setPage] = useState(1)
   const { data: allNotices = mockNotices } = useQuery({
     queryKey: ['notices'],
@@ -32,16 +34,25 @@ export function NoticeListPage() {
         : allNotices.filter((notice) => notice.category === active)
 
     const keyword = query.trim().toLowerCase()
-    if (!keyword) return byCategory
-    return byCategory.filter((n) =>
-      `${n.title} ${n.category} ${n.date}`.toLowerCase().includes(keyword),
+    const matchingNotices = keyword
+      ? byCategory.filter((notice) =>
+          `${notice.title} ${notice.category} ${notice.date}`
+            .toLowerCase()
+            .includes(keyword),
+        )
+      : byCategory
+
+    return [...matchingNotices].sort((a, b) =>
+      sort === 'newest'
+        ? b.date.localeCompare(a.date)
+        : a.date.localeCompare(b.date),
     )
-  }, [active, allNotices, query])
+  }, [active, allNotices, query, sort])
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
 
   // 탭·검색이 바뀌면 첫 페이지로 되돌린다. 렌더 중 상태 보정(effect 불필요).
-  const filterKey = `${active} ${query}`
+  const filterKey = `${active} ${query} ${sort}`
   const [prevFilterKey, setPrevFilterKey] = useState(filterKey)
   if (prevFilterKey !== filterKey) {
     setPrevFilterKey(filterKey)
@@ -80,6 +91,11 @@ export function NoticeListPage() {
             onChange: setQuery,
             placeholder: '제목을 입력해주세요',
             ariaLabel: '공지 검색',
+          }}
+          sort={{
+            value: sort,
+            onChange: setSort,
+            ariaLabel: '공지 날짜 정렬',
           }}
           pagination={{ page: currentPage, pageCount, onChange: setPage }}
           emptyLabel={

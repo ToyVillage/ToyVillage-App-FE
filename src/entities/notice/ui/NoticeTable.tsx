@@ -1,6 +1,7 @@
 import {
   DataTable,
   type DataTableSearch,
+  type DataTableSort,
   type DataTablePagination,
 } from '@/shared/ui'
 import type { Notice } from '../model/types'
@@ -9,6 +10,7 @@ interface NoticeTableProps {
   notices: Notice[]
   onRowClick?: (id: string) => void
   search?: DataTableSearch
+  sort?: DataTableSort
   pagination?: DataTablePagination
   emptyLabel?: string
 }
@@ -18,6 +20,7 @@ export function NoticeTable({
   notices,
   onRowClick,
   search,
+  sort,
   pagination,
   emptyLabel,
 }: NoticeTableProps) {
@@ -32,6 +35,7 @@ export function NoticeTable({
       onRowClick={onRowClick}
       rowTestId="notice-row"
       search={search}
+      sort={sort}
       pagination={pagination}
       emptyLabel={emptyLabel}
     />
