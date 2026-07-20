@@ -28,18 +28,23 @@ export function NoticeAttachmentField({
   function addFiles(fileList: FileList | File[]) {
     const incomingFiles = Array.from(fileList)
     const oversizedFile = incomingFiles.find((file) => file.size > maxFileSize)
+    const attachableFiles = incomingFiles.filter(
+      (file) => file.size <= maxFileSize,
+    )
 
     if (oversizedFile) {
       setErrorMessage(
         `${oversizedFile.name}은 50MB를 초과해 첨부할 수 없습니다.`,
       )
-      return
+    } else {
+      setErrorMessage('')
     }
 
-    setErrorMessage('')
+    if (attachableFiles.length === 0) return
+
     setFiles((currentFiles) => {
       const knownIds = new Set(currentFiles.map(({ id }) => id))
-      const nextFiles = incomingFiles
+      const nextFiles = attachableFiles
         .map((file) => ({ file, id: fileId(file) }))
         .filter(({ id }) => !knownIds.has(id))
 
