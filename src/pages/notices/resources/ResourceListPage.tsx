@@ -25,13 +25,13 @@ export function ResourceListPage() {
     const byType =
       type === null || type === undefined
         ? mockResources
-        : mockResources.filter((r) => r.fileType === type)
+        : mockResources.filter((resource) => resource.fileType === type)
 
     const keyword = query.trim().toLowerCase()
     if (!keyword) return byType
 
-    return byType.filter((r) =>
-      `${r.title} ${fileTypeLabel[r.fileType]} ${r.date}`
+    return byType.filter((resource) =>
+      `${resource.title} ${fileTypeLabel[resource.fileType]} ${resource.date}`
         .toLowerCase()
         .includes(keyword),
     )
@@ -39,7 +39,6 @@ export function ResourceListPage() {
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
 
-  // 탭·검색이 바뀌면 첫 페이지로 되돌린다. 렌더 중 상태 보정(effect 불필요).
   const filterKey = `${active} ${query}`
   const [prevFilterKey, setPrevFilterKey] = useState(filterKey)
   if (prevFilterKey !== filterKey) {

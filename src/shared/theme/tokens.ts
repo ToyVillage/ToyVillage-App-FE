@@ -24,6 +24,8 @@ export const tokens = {
     avatar: '#D9D9D9',
     iconMuted: '#858585',
     danger: '#FF3131',
+    filePng: '#13A76B',
+    fileJpg: '#E8B64C',
   },
   font: {
     body: '"Wanted Sans", system-ui, -apple-system, sans-serif',
