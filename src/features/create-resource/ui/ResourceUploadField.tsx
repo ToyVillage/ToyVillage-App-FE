@@ -327,6 +327,11 @@ const DropZone = styled.button`
   cursor: pointer;
   font: inherit;
 
+  /* 드래그 중 자식(아이콘·텍스트) 위로 이동 시 부모 onDragLeave 가 튀어 깜빡이는 것 방지 */
+  & > * {
+    pointer-events: none;
+  }
+
   &[data-dragging='true'] {
     border-color: ${({ theme }) => theme.colors.primary};
     background: ${({ theme }) => theme.colors.primaryBg};
