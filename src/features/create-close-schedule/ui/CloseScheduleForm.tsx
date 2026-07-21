@@ -9,9 +9,8 @@ import {
   type CloseSchedule,
   type CreateCloseScheduleInput,
 } from '@/entities/close-schedule'
-import { ValidationDialog } from '@/shared/ui'
+import { DeleteConfirmationDialog, ValidationDialog } from '@/shared/ui'
 import { CloseScheduleDateField } from './CloseScheduleDateField'
-import { DeleteConfirmationDialog } from './DeleteConfirmationDialog'
 
 type ValidationError = 'date' | 'title' | 'range'
 
