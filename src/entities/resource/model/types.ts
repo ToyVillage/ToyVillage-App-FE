@@ -6,3 +6,5 @@ export interface Resource {
   title: string
   date: string
 }
+
+export type CreateResourceInput = Pick<Resource, 'fileType' | 'title'>
