@@ -191,7 +191,9 @@ const Nav = styled.nav`
   gap: calc(56px - 32px);
 `
 
-const NavItem = styled(Link)<{ $active: boolean }>`
+const NavItem = styled(Link, {
+  shouldForwardProp: (prop) => prop !== '$active',
+})<{ $active: boolean }>`
   display: flex;
   min-height: 32px;
   align-items: center;
