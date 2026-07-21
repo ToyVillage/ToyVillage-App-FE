@@ -43,10 +43,14 @@ export function NoticeAttachmentField({
     if (attachableFiles.length === 0) return
 
     setFiles((currentFiles) => {
-      const knownIds = new Set(currentFiles.map(({ id }) => id))
-      const nextFiles = attachableFiles
-        .map((file) => ({ file, id: fileId(file) }))
-        .filter(({ id }) => !knownIds.has(id))
+      // 같은 파일명이면(내용이 달라도) 하나의 칩만 유지 — 기존 첨부와 이번 선택 배치 모두 기준.
+      const knownNames = new Set(currentFiles.map(({ file }) => file.name))
+      const nextFiles: AttachedFile[] = []
+      for (const file of attachableFiles) {
+        if (knownNames.has(file.name)) continue
+        knownNames.add(file.name)
+        nextFiles.push({ file, id: fileId(file) })
+      }
 
       return [...currentFiles, ...nextFiles]
     })
