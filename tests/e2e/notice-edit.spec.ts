@@ -87,7 +87,7 @@ test('S7: 삭제 취소 → 화면 유지와 포커스 복귀', async ({ page })
 test('S8: 삭제 확인 → 목록에서 제거', async ({ page }) => {
   await page.goto('/notices/list/1')
   await page.getByRole('button', { name: '삭제하기' }).click()
-  await page.getByRole('button', { name: '삭제', exact: true }).click()
+  await page.getByRole('button', { name: '확인', exact: true }).click()
 
   await expect(page).toHaveURL(/\/notices\/list$/)
   await expect(
