@@ -5,25 +5,36 @@ import { RemoveIconButton } from './RemoveIconButton'
 const maxFileSize = 50 * 1024 * 1024
 
 interface AttachedFile {
-  file: File
   id: string
+  name: string
+  file?: File
 }
 
 interface NoticeAttachmentFieldProps {
+  initialFileNames?: string[]
   onFilesChange?: (hasFiles: boolean) => void
+  onFileNamesChange?: (fileNames: string[]) => void
 }
 
 export function NoticeAttachmentField({
+  initialFileNames = [],
   onFilesChange,
+  onFileNamesChange,
 }: NoticeAttachmentFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [files, setFiles] = useState<AttachedFile[]>([])
+  const [files, setFiles] = useState<AttachedFile[]>(() =>
+    initialFileNames.map((name, index) => ({
+      id: `existing:${index}:${name}`,
+      name,
+    })),
+  )
   const [isDragging, setIsDragging] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     onFilesChange?.(files.length > 0)
-  }, [files.length, onFilesChange])
+    onFileNamesChange?.(files.map(({ name }) => name))
+  }, [files, onFileNamesChange, onFilesChange])
 
   function addFiles(fileList: FileList | File[]) {
     const incomingFiles = Array.from(fileList)
@@ -49,7 +60,7 @@ export function NoticeAttachmentField({
       for (const file of attachableFiles) {
         if (knownNames.has(file.name)) continue
         knownNames.add(file.name)
-        nextFiles.push({ file, id: fileId(file) })
+        nextFiles.push({ file, id: fileId(file), name: file.name })
       }
 
       return [...currentFiles, ...nextFiles]
@@ -68,10 +79,13 @@ export function NoticeAttachmentField({
   }
 
   function handleDownload(attachedFile: AttachedFile) {
-    const url = URL.createObjectURL(attachedFile.file)
+    const source =
+      attachedFile.file ??
+      new Blob([`${attachedFile.name}\n`], { type: 'text/plain' })
+    const url = URL.createObjectURL(source)
     const link = document.createElement('a')
     link.href = url
-    link.download = attachedFile.file.name
+    link.download = attachedFile.name
     link.click()
     URL.revokeObjectURL(url)
   }
@@ -88,15 +102,15 @@ export function NoticeAttachmentField({
             <AttachmentTitle>첨부자료</AttachmentTitle>
             <FileList>
               {files.map((attachedFile) => {
-                const kind = fileKind(attachedFile.file.name)
+                const kind = fileKind(attachedFile.name)
 
                 return (
                   <FileChip key={attachedFile.id}>
                     <FileBadge data-kind={kind}>{kind.toUpperCase()}</FileBadge>
-                    <FileName>{attachedFile.file.name}</FileName>
+                    <FileName>{attachedFile.name}</FileName>
                     <IconButton
                       type="button"
-                      aria-label={`${attachedFile.file.name} 다운로드`}
+                      aria-label={`${attachedFile.name} 다운로드`}
                       onClick={() => handleDownload(attachedFile)}
                     >
                       <DownloadIcon viewBox="0 0 24 24" aria-hidden="true">
@@ -106,7 +120,7 @@ export function NoticeAttachmentField({
                     <RemoveIconButton
                       type="button"
                       data-hover-reveal="true"
-                      aria-label={`${attachedFile.file.name} 삭제`}
+                      aria-label={`${attachedFile.name} 삭제`}
                       onClick={() => handleRemove(attachedFile.id)}
                     />
                   </FileChip>

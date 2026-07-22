@@ -7,4 +7,5 @@ export type {
   DataTablePagination,
 } from './DataTable'
 export { LinkButton } from './LinkButton'
+export { DeleteConfirmationDialog } from './DeleteConfirmationDialog'
 export { ValidationDialog } from './ValidationDialog'

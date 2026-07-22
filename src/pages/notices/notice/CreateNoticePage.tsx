@@ -1,10 +1,12 @@
 import { useCallback, useRef, useState } from 'react'
 import styled from '@emotion/styled'
-import { Link, useBeforeUnload, useBlocker, useNavigate } from 'react-router-dom'
 import {
-  LeaveConfirmationDialog,
-  NoticeForm,
-} from '@/features/create-notice'
+  Link,
+  useBeforeUnload,
+  useBlocker,
+  useNavigate,
+} from 'react-router-dom'
+import { LeaveConfirmationDialog, NoticeForm } from '@/features/create-notice'
 
 export function CreateNoticePage() {
   const navigate = useNavigate()
@@ -45,10 +47,7 @@ export function CreateNoticePage() {
           </BackIcon>
           뒤로가기
         </BackLink>
-        <NoticeForm
-          onCreated={handleCreated}
-          onDirtyChange={setIsDirty}
-        />
+        <NoticeForm onCompleted={handleCreated} onDirtyChange={setIsDirty} />
       </Content>
       {blocker.state === 'blocked' && (
         <LeaveConfirmationDialog

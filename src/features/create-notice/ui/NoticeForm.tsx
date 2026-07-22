@@ -1,17 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   createMockNotice,
+  deleteMockNotice,
   noticeCategories,
-  type CreateNoticeInput,
+  updateMockNotice,
+  type Notice,
+  type UpdateNoticeInput,
 } from '@/entities/notice'
-import { ValidationDialog } from '@/shared/ui'
+import { DeleteConfirmationDialog, ValidationDialog } from '@/shared/ui'
 import { NoticeAttachmentField } from './NoticeAttachmentField'
 import { RemoveIconButton } from './RemoveIconButton'
 import { TeamAddDialog } from './TeamAddDialog'
 
-type FieldName = Exclude<keyof CreateNoticeInput, 'category'>
+type FieldName = 'title' | 'content'
 
 const validationMessages: Record<FieldName, string> = {
   title: '제목을 입력해 주세요',
@@ -21,39 +24,83 @@ const validationMessages: Record<FieldName, string> = {
 const initialCategories = noticeCategories.slice(0, 3)
 
 interface NoticeFormProps {
-  onCreated: () => void
+  initialNotice?: Notice
+  onCompleted: () => void
   onDirtyChange: (isDirty: boolean) => void
 }
 
-export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
+export function NoticeForm({
+  initialNotice,
+  onCompleted,
+  onDirtyChange,
+}: NoticeFormProps) {
   const queryClient = useQueryClient()
   const submittingRef = useRef(false)
+  const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const teamAddButtonRef = useRef<HTMLButtonElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const contentRef = useRef<HTMLTextAreaElement>(null)
-  const [category, setCategory] = useState(initialCategories[0])
-  const [categories, setCategories] = useState(initialCategories)
+  const initialCategory = initialNotice?.category ?? initialCategories[0]
+  const initialAttachmentNames = useMemo(
+    () => initialNotice?.attachments ?? [],
+    [initialNotice?.attachments],
+  )
+  const formInitialCategories = useMemo(
+    () => Array.from(new Set([...initialCategories, initialCategory])),
+    [initialCategory],
+  )
+  const [category, setCategory] = useState(initialCategory)
+  const [categories, setCategories] = useState(formInitialCategories)
   const [teamDialogOpen, setTeamDialogOpen] = useState(false)
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [title, setTitle] = useState(initialNotice?.title ?? '')
+  const [content, setContent] = useState(initialNotice?.content ?? '')
   const [hasAttachments, setHasAttachments] = useState(false)
+  const [attachmentNames, setAttachmentNames] = useState(initialAttachmentNames)
   const [validationError, setValidationError] = useState<FieldName | null>(null)
-  const mutation = useMutation({ mutationFn: createMockNotice })
+  const mutation = useMutation({
+    mutationFn: (input: UpdateNoticeInput) =>
+      initialNotice
+        ? updateMockNotice({ id: initialNotice.id, input })
+        : createMockNotice(input),
+  })
+  const deleteMutation = useMutation({
+    mutationFn: () => {
+      if (!initialNotice) throw new Error('Notice not found')
+      return deleteMockNotice(initialNotice.id)
+    },
+  })
+  const isEditing = Boolean(initialNotice)
 
   useEffect(() => {
     const categoriesChanged =
-      categories.length !== initialCategories.length ||
-      categories.some((item, index) => item !== initialCategories[index])
+      categories.length !== formInitialCategories.length ||
+      categories.some((item, index) => item !== formInitialCategories[index])
     const isDirty = Boolean(
-      title ||
-      content ||
-      category !== initialCategories[0] ||
+      title !== (initialNotice?.title ?? '') ||
+      content !== (initialNotice?.content ?? '') ||
+      category !== initialCategory ||
       categoriesChanged ||
-      hasAttachments,
+      (isEditing
+        ? !sameStringArray(attachmentNames, initialAttachmentNames)
+        : hasAttachments),
     )
 
     onDirtyChange(isDirty)
-  }, [category, categories, content, hasAttachments, onDirtyChange, title])
+  }, [
+    attachmentNames,
+    category,
+    categories,
+    content,
+    hasAttachments,
+    initialAttachmentNames,
+    initialCategory,
+    initialNotice,
+    isEditing,
+    onDirtyChange,
+    formInitialCategories,
+    title,
+  ])
 
   const handleConfirm = useCallback(() => {
     const error = validationError
@@ -73,10 +120,11 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
     event.preventDefault()
     if (submittingRef.current) return
 
-    const input: CreateNoticeInput = {
+    const input: UpdateNoticeInput = {
       category,
       title: title.trim(),
       content: content.trim(),
+      attachments: attachmentNames,
     }
     const nextError = validate(input)
 
@@ -90,7 +138,10 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
     mutation.mutate(input, {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: ['notices'] })
-        onCreated()
+        if (initialNotice) {
+          queryClient.setQueryData(['notices', initialNotice.id], undefined)
+        }
+        onCompleted()
       },
       onError: () => {
         submittingRef.current = false
@@ -98,11 +149,25 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
     })
   }
 
+  function handleDelete() {
+    if (deleteMutation.isPending) return
+
+    deleteMutation.mutate(undefined, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ['notices'] })
+        if (initialNotice) {
+          queryClient.removeQueries({ queryKey: ['notices', initialNotice.id] })
+        }
+        onCompleted()
+      },
+    })
+  }
+
   return (
-    <Form onSubmit={handleSubmit} noValidate>
+    <Form data-editing={isEditing} onSubmit={handleSubmit} noValidate>
       <TitleCard>
         <Label htmlFor="notice-title">
-          제목 <Required aria-hidden="true">*</Required>
+          제목 {!isEditing && <Required aria-hidden="true">*</Required>}
         </Label>
         <TitleInput
           ref={titleRef}
@@ -135,7 +200,7 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
               {option !== '전체' && (
                 <CategoryRemove
                   type="button"
-                  data-hover-reveal="true"
+                  data-hover-reveal={isEditing ? undefined : 'true'}
                   aria-label={`${categoryDisplayName(option)} 삭제`}
                   onClick={() => {
                     setCategories((current) =>
@@ -147,13 +212,15 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
               )}
             </CategoryOption>
           ))}
-          <TeamAddButton
-            ref={teamAddButtonRef}
-            type="button"
-            onClick={() => setTeamDialogOpen(true)}
-          >
-            + 팀 추가
-          </TeamAddButton>
+          {!isEditing && (
+            <TeamAddButton
+              ref={teamAddButtonRef}
+              type="button"
+              onClick={() => setTeamDialogOpen(true)}
+            >
+              + 팀 추가
+            </TeamAddButton>
+          )}
         </CategoryOptions>
       </CategoryCard>
 
@@ -174,17 +241,48 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
         />
       </ContentCard>
 
-      <NoticeAttachmentField onFilesChange={setHasAttachments} />
+      <NoticeAttachmentField
+        initialFileNames={initialAttachmentNames}
+        onFilesChange={setHasAttachments}
+        onFileNamesChange={setAttachmentNames}
+      />
 
       {mutation.isError && (
         <SubmitStatus role="status">
-          생성하지 못했습니다. 다시 시도해 주세요.
+          {isEditing
+            ? '저장하지 못했습니다. 다시 시도해 주세요.'
+            : '생성하지 못했습니다. 다시 시도해 주세요.'}
+        </SubmitStatus>
+      )}
+
+      {deleteMutation.isError && (
+        <SubmitStatus role="status">
+          삭제하지 못했습니다. 다시 시도해 주세요.
         </SubmitStatus>
       )}
 
       <Actions>
-        <SubmitButton type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? '생성 중' : '생성하기'}
+        {isEditing && (
+          <DeleteButton
+            ref={deleteButtonRef}
+            type="button"
+            disabled={mutation.isPending || deleteMutation.isPending}
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            삭제하기
+          </DeleteButton>
+        )}
+        <SubmitButton
+          type="submit"
+          disabled={mutation.isPending || deleteMutation.isPending}
+        >
+          {mutation.isPending
+            ? isEditing
+              ? '저장 중'
+              : '생성 중'
+            : isEditing
+              ? '저장하기'
+              : '생성하기'}
         </SubmitButton>
       </Actions>
 
@@ -211,14 +309,32 @@ export function NoticeForm({ onCreated, onDirtyChange }: NoticeFormProps) {
           }}
         />
       )}
+
+      {deleteDialogOpen && (
+        <DeleteConfirmationDialog
+          pending={deleteMutation.isPending}
+          onCancel={() => {
+            setDeleteDialogOpen(false)
+            requestAnimationFrame(() => deleteButtonRef.current?.focus())
+          }}
+          onConfirm={handleDelete}
+        />
+      )}
     </Form>
   )
 }
 
-function validate(input: CreateNoticeInput): FieldName | null {
+function validate(input: UpdateNoticeInput): FieldName | null {
   if (!input.title) return 'title'
   if (!input.content) return 'content'
   return null
+}
+
+function sameStringArray(left: string[], right: string[]) {
+  return (
+    left.length === right.length &&
+    left.every((value, index) => value === right[index])
+  )
 }
 
 function categoryDisplayName(category: string) {
@@ -233,6 +349,10 @@ function resizeTextarea(textarea: HTMLTextAreaElement) {
 const Form = styled.form`
   width: 100%;
   margin-top: 60px;
+
+  &[data-editing='true'] {
+    margin-top: 0;
+  }
 
   @media (max-width: 980px) {
     margin-top: 40px;
@@ -458,7 +578,33 @@ const SubmitStatus = styled.p`
 const Actions = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: 24px;
   margin-top: 32px;
+`
+
+const DeleteButton = styled.button`
+  min-width: 123px;
+  height: 61px;
+  padding: 0 16px;
+  border: 2px solid ${({ theme }) => theme.colors.danger};
+  border-radius: 8px;
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.danger};
+  cursor: pointer;
+  font: inherit;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.6;
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.danger};
+    outline-offset: 3px;
+  }
 `
 
 const SubmitButton = styled.button`

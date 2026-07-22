@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import styled from '@emotion/styled'
-import warningIcon from '@/features/edit-operating-hours/ui/assets/warning.svg'
+import warningIcon from './assets/warning.svg'
 
 interface DeleteConfirmationDialogProps {
   pending: boolean
@@ -14,6 +14,8 @@ export function DeleteConfirmationDialog({
   onCancel,
   onConfirm,
 }: DeleteConfirmationDialogProps) {
+  const titleId = useId()
+  const descriptionId = useId()
   const cancelRef = useRef<HTMLButtonElement>(null)
   const confirmRef = useRef<HTMLButtonElement>(null)
   const pendingRef = useRef(pending)
@@ -37,16 +39,15 @@ export function DeleteConfirmationDialog({
 
       if (event.key !== 'Tab') return
 
-      const firstButton = confirmRef.current
-      const lastButton = cancelRef.current
-      if (!firstButton || !lastButton) return
-
-      if (event.shiftKey && document.activeElement === firstButton) {
+      if (event.shiftKey && document.activeElement === cancelRef.current) {
         event.preventDefault()
-        lastButton.focus()
-      } else if (!event.shiftKey && document.activeElement === lastButton) {
+        confirmRef.current?.focus()
+      } else if (
+        !event.shiftKey &&
+        document.activeElement === confirmRef.current
+      ) {
         event.preventDefault()
-        firstButton.focus()
+        cancelRef.current?.focus()
       }
     }
 
@@ -63,28 +64,20 @@ export function DeleteConfirmationDialog({
       <Dialog
         role="alertdialog"
         aria-modal="true"
-        aria-labelledby="close-schedule-delete-title"
-        aria-describedby="close-schedule-delete-description"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         aria-busy={pending}
       >
         <Copy>
           <WarningIcon src={warningIcon} alt="" aria-hidden="true" />
-          <Title id="close-schedule-delete-title">정말 삭제하시겠습니까?</Title>
-          <Description id="close-schedule-delete-description">
+          <Title id={titleId}>정말 삭제하시겠습니까?</Title>
+          <Description id={descriptionId}>
             삭제하신 뒤에는 영구삭제되며
             <br />
             복구 할 수 없습니다
           </Description>
         </Copy>
         <Actions>
-          <ConfirmButton
-            ref={confirmRef}
-            type="button"
-            disabled={pending}
-            onClick={onConfirm}
-          >
-            {pending ? '삭제 중' : '확인'}
-          </ConfirmButton>
           <CancelButton
             ref={cancelRef}
             type="button"
@@ -93,6 +86,14 @@ export function DeleteConfirmationDialog({
           >
             취소
           </CancelButton>
+          <ConfirmButton
+            ref={confirmRef}
+            type="button"
+            disabled={pending}
+            onClick={onConfirm}
+          >
+            {pending ? '삭제 중' : '확인'}
+          </ConfirmButton>
         </Actions>
       </Dialog>
     </Overlay>,
