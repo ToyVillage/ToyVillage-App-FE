@@ -43,22 +43,31 @@ export function ResourceUploadField({ onFilesChange }: ResourceUploadFieldProps)
       (file) => file.size <= maxFileSize,
     )
 
-    setErrorMessage(
-      oversizedFile
-        ? `${oversizedFile.name}은 50MB를 초과해 업로드할 수 없습니다.`
-        : '',
-    )
+    // 이미 업로드된 파일 + 이번 선택 배치 내 중복(같은 name·size·lastModified)을 제외한다.
+    const knownIds = new Set(files.map(({ id }) => id))
+    const nextFiles: AttachedFile[] = []
+    let duplicateFile: File | undefined
+    for (const file of attachableFiles) {
+      const id = fileId(file)
+      if (knownIds.has(id)) {
+        duplicateFile ??= file
+        continue
+      }
+      knownIds.add(id)
+      nextFiles.push({ file, id })
+    }
 
-    if (attachableFiles.length === 0) return
+    if (oversizedFile) {
+      setErrorMessage(`${oversizedFile.name}은 50MB를 초과해 업로드할 수 없습니다.`)
+    } else if (duplicateFile) {
+      setErrorMessage(`${duplicateFile.name}은 이미 업로드된 파일입니다.`)
+    } else {
+      setErrorMessage('')
+    }
 
-    setFiles((currentFiles) => {
-      const knownIds = new Set(currentFiles.map(({ id }) => id))
-      const nextFiles = attachableFiles
-        .map((file) => ({ file, id: fileId(file) }))
-        .filter(({ id }) => !knownIds.has(id))
-
-      return [...currentFiles, ...nextFiles]
-    })
+    if (nextFiles.length > 0) {
+      setFiles((currentFiles) => [...currentFiles, ...nextFiles])
+    }
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {

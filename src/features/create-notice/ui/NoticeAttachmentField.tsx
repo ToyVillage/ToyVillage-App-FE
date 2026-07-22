@@ -43,28 +43,32 @@ export function NoticeAttachmentField({
       (file) => file.size <= maxFileSize,
     )
 
+    // 이미 첨부된 파일 + 이번 선택 배치 내 중복(같은 name·size·lastModified)을 제외한다.
+    // 이름만 같고 내용이 다른 파일은 서로 다른 파일로 취급해 함께 첨부한다.
+    const knownIds = new Set(files.map(({ id }) => id))
+    const nextFiles: AttachedFile[] = []
+    let duplicateFile: File | undefined
+    for (const file of attachableFiles) {
+      const id = fileId(file)
+      if (knownIds.has(id)) {
+        duplicateFile ??= file
+        continue
+      }
+      knownIds.add(id)
+      nextFiles.push({ file, id, name: file.name })
+    }
+
     if (oversizedFile) {
-      setErrorMessage(
-        `${oversizedFile.name}은 50MB를 초과해 첨부할 수 없습니다.`,
-      )
+      setErrorMessage(`${oversizedFile.name}은 50MB를 초과해 첨부할 수 없습니다.`)
+    } else if (duplicateFile) {
+      setErrorMessage(`${duplicateFile.name}은 이미 첨부된 파일입니다.`)
     } else {
       setErrorMessage('')
     }
 
-    if (attachableFiles.length === 0) return
-
-    setFiles((currentFiles) => {
-      // 같은 파일명이면(내용이 달라도) 하나의 칩만 유지 — 기존 첨부와 이번 선택 배치 모두 기준.
-      const knownNames = new Set(currentFiles.map(({ name }) => name))
-      const nextFiles: AttachedFile[] = []
-      for (const file of attachableFiles) {
-        if (knownNames.has(file.name)) continue
-        knownNames.add(file.name)
-        nextFiles.push({ file, id: fileId(file), name: file.name })
-      }
-
-      return [...currentFiles, ...nextFiles]
-    })
+    if (nextFiles.length > 0) {
+      setFiles((currentFiles) => [...currentFiles, ...nextFiles])
+    }
   }
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
