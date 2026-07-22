@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import {
   ResourceTable,
+  getMockResources,
   mockResources,
   fileTypeTabs,
   fileTypeLabel,
@@ -19,13 +21,18 @@ export function ResourceListPage() {
   const [active, setActive] = useState('전체')
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
+  const { data: allResources = mockResources } = useQuery({
+    queryKey: ['resources'],
+    queryFn: getMockResources,
+    placeholderData: mockResources,
+  })
 
   const filtered = useMemo(() => {
     const type = tabToFileType[active]
     const byType =
       type === null || type === undefined
-        ? mockResources
-        : mockResources.filter((resource) => resource.fileType === type)
+        ? allResources
+        : allResources.filter((resource) => resource.fileType === type)
 
     const keyword = query.trim().toLowerCase()
     if (!keyword) return byType
@@ -35,7 +42,7 @@ export function ResourceListPage() {
         .toLowerCase()
         .includes(keyword),
     )
-  }, [active, query])
+  }, [active, allResources, query])
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
 
