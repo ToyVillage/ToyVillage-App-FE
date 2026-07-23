@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   createMockNotice,
   deleteMockNotice,
-  noticeCategories,
   updateMockNotice,
   type Notice,
   type UpdateNoticeInput,
@@ -21,7 +20,7 @@ const validationMessages: Record<FieldName, string> = {
   content: '내용을 입력해 주세요',
 }
 
-const initialCategories = noticeCategories.slice(0, 3)
+const defaultCategory = '전체'
 
 interface NoticeFormProps {
   initialNotice?: Notice
@@ -40,13 +39,13 @@ export function NoticeForm({
   const teamAddButtonRef = useRef<HTMLButtonElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const contentRef = useRef<HTMLTextAreaElement>(null)
-  const initialCategory = initialNotice?.category ?? initialCategories[0]
+  const initialCategory = initialNotice?.category ?? defaultCategory
   const initialAttachmentNames = useMemo(
     () => initialNotice?.attachments ?? [],
     [initialNotice?.attachments],
   )
   const formInitialCategories = useMemo(
-    () => Array.from(new Set([...initialCategories, initialCategory])),
+    () => [initialCategory],
     [initialCategory],
   )
   const [category, setCategory] = useState(initialCategory)
@@ -203,24 +202,30 @@ export function NoticeForm({
                   data-hover-reveal={isEditing ? undefined : 'true'}
                   aria-label={`${categoryDisplayName(option)} 삭제`}
                   onClick={() => {
-                    setCategories((current) =>
-                      current.filter((item) => item !== option),
+                    const nextCategories = categories.filter(
+                      (item) => item !== option,
                     )
-                    if (category === option) setCategory(initialCategories[0])
+                    const normalizedCategories =
+                      nextCategories.length > 0
+                        ? nextCategories
+                        : [defaultCategory]
+
+                    setCategories(normalizedCategories)
+                    if (category === option) {
+                      setCategory(normalizedCategories[0])
+                    }
                   }}
                 />
               )}
             </CategoryOption>
           ))}
-          {!isEditing && (
-            <TeamAddButton
-              ref={teamAddButtonRef}
-              type="button"
-              onClick={() => setTeamDialogOpen(true)}
-            >
-              + 팀 추가
-            </TeamAddButton>
-          )}
+          <TeamAddButton
+            ref={teamAddButtonRef}
+            type="button"
+            onClick={() => setTeamDialogOpen(true)}
+          >
+            + 팀 추가
+          </TeamAddButton>
         </CategoryOptions>
       </CategoryCard>
 
@@ -300,9 +305,14 @@ export function NoticeForm({
             requestAnimationFrame(() => teamAddButtonRef.current?.focus())
           }}
           onAdd={(teamName) => {
-            setCategories((current) =>
-              current.includes(teamName) ? current : [...current, teamName],
-            )
+            setCategories((current) => {
+              const teamCategories = current.filter(
+                (item) => item !== defaultCategory,
+              )
+              return teamCategories.includes(teamName)
+                ? teamCategories
+                : [...teamCategories, teamName]
+            })
             setCategory(teamName)
             setTeamDialogOpen(false)
             requestAnimationFrame(() => teamAddButtonRef.current?.focus())

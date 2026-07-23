@@ -14,6 +14,9 @@ test('S2: 기존 제목·내용·첨부 복원', async ({ page }) => {
 
   await expect(page.getByLabel('제목')).toHaveValue('7월 13일 휴관안내')
   await expect(page.getByLabel('내용')).toContainText('그냥 더미 텍스트')
+  await expect(page.getByRole('radio', { name: '전체' })).toBeChecked()
+  await expect(page.getByRole('radio')).toHaveCount(1)
+  await expect(page.getByRole('button', { name: '팀 추가' })).toBeVisible()
   await expect(page.getByText('당일 지침.pdf')).toBeVisible()
   await expect(page.getByText('휴관안내.png')).toBeVisible()
   await expect(page.getByText('휴관안내.jpg')).toBeVisible()
@@ -143,3 +146,43 @@ test('S12: 키보드로 편집과 삭제 취소', async ({ page }) => {
   await page.keyboard.press('Escape')
   await expect(page.getByRole('button', { name: '삭제하기' })).toBeFocused()
 })
+
+test('수정에서도 팀을 추가하면 전체가 사라지고 여러 팀을 유지한다', async ({
+  page,
+}) => {
+  await page.goto('/notices/list/1')
+
+  await addTeam(page, '기획팀')
+  await expect(page.getByRole('radio', { name: '전체' })).toHaveCount(0)
+  await expect(page.getByRole('radio', { name: '기획팀' })).toBeChecked()
+
+  await addTeam(page, '운영팀')
+  await expect(page.getByRole('radio', { name: '기획팀' })).toBeVisible()
+  await expect(page.getByRole('radio', { name: '운영팀' })).toBeChecked()
+
+  await page.getByRole('button', { name: '저장하기' }).click()
+  await expect(page).toHaveURL(/\/notices\/list$/)
+})
+
+test('수정에서 마지막 팀을 삭제하면 전체 분류로 돌아간다', async ({ page }) => {
+  await page.goto('/notices/list/2')
+
+  await expect(page.getByRole('radio', { name: '팀 이름1' })).toBeChecked()
+  await expect(page.getByRole('radio')).toHaveCount(1)
+  const removeButton = page.getByRole('button', { name: '팀 이름1 삭제' })
+  await removeButton.locator('..').hover()
+  await removeButton.click()
+
+  await expect(page.getByRole('radio', { name: '전체' })).toBeChecked()
+  await expect(page.getByRole('radio')).toHaveCount(1)
+})
+
+async function addTeam(
+  page: import('@playwright/test').Page,
+  teamName: string,
+) {
+  await page.getByRole('button', { name: '팀 추가' }).click()
+  const dialog = page.getByRole('dialog', { name: '팀 추가하기' })
+  await dialog.getByRole('textbox', { name: '팀 이름' }).fill(teamName)
+  await dialog.getByRole('button', { name: '다음' }).click()
+}
