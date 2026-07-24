@@ -17,6 +17,7 @@ test('S2: 생성 폼 표시', async ({ page }) => {
   await expect(page.getByRole('group', { name: /분류/ })).toBeVisible()
   await expect(page.getByLabel(/내용/)).toBeVisible()
   await expect(page.getByRole('radio', { name: '전체' })).toBeChecked()
+  await expect(page.getByRole('radio')).toHaveCount(1)
   await expect(attachmentGroup(page)).toBeVisible()
   await expect(page.getByTestId('notice-attachment-card')).toBeEmpty()
   await expect(uploadControl(page)).toBeVisible()
@@ -225,6 +226,7 @@ test('S9: 저장 실패 시 입력을 보존하고 다시 제출할 수 있다',
     }
   }, noticeStorageKey)
 
+  await addTeam(page, '팀 이름1')
   await fillValidNotice(page, '보존할 공지')
   await page.getByRole('button', { name: '생성하기' }).click()
 
@@ -248,14 +250,6 @@ test('S10: 키보드 순서와 오류 포커스 이동', async ({ page }) => {
   await page.keyboard.press('Tab')
   await expect(page.getByRole('radio', { name: '전체' })).toBeFocused()
   await page.keyboard.press('Tab')
-  await expect(
-    page.getByRole('button', { name: '팀 이름1 삭제' }),
-  ).toBeFocused()
-  await page.keyboard.press('Tab')
-  await expect(
-    page.getByRole('button', { name: '팀 이름2 삭제' }),
-  ).toBeFocused()
-  await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '팀 추가' })).toBeFocused()
   await page.keyboard.press('Tab')
   await expect(page.getByLabel(/내용/)).toBeFocused()
@@ -270,9 +264,8 @@ test('S10: 키보드 순서와 오류 포커스 이동', async ({ page }) => {
 })
 
 test('팀을 선택해도 핑크로 강조하지 않는다', async ({ page }) => {
+  await addTeam(page, '팀 이름1')
   const team = page.getByRole('radio', { name: '팀 이름1' })
-
-  await team.check()
 
   await expect(team).toBeChecked()
   await expect(team.locator('..').locator('..')).toHaveCSS(
@@ -284,7 +277,7 @@ test('팀을 선택해도 핑크로 강조하지 않는다', async ({ page }) =>
 test('선택한 팀을 삭제하면 전체 분류로 돌아간다', async ({ page }) => {
   await page.getByLabel(/제목/).fill('제목 입력')
   await page.getByLabel(/내용/).fill('공지 내용')
-  await page.getByRole('radio', { name: '팀 이름1' }).check()
+  await addTeam(page, '팀 이름1')
 
   const removeButton = page.getByRole('button', { name: '팀 이름1 삭제' })
   await removeButton.locator('..').hover()
@@ -343,6 +336,35 @@ test('모달에 입력한 이름으로 팀을 추가한다', async ({ page }) =>
   await expect(removeButton).toHaveCSS('opacity', '1')
 })
 
+test('팀을 처음 추가하면 전체가 사라지고 팀을 여러 번 추가할 수 있다', async ({
+  page,
+}) => {
+  await addTeam(page, '기획팀')
+
+  await expect(page.getByRole('radio', { name: '전체' })).toHaveCount(0)
+  await expect(page.getByRole('radio', { name: '기획팀' })).toBeChecked()
+
+  await addTeam(page, '운영팀')
+
+  await expect(page.getByRole('radio', { name: '전체' })).toHaveCount(0)
+  await expect(page.getByRole('radio', { name: '기획팀' })).toBeVisible()
+  await expect(page.getByRole('radio', { name: '운영팀' })).toBeChecked()
+  await expect(page.getByRole('button', { name: '팀 추가' })).toBeVisible()
+})
+
+test('여러 팀 중 선택한 팀을 삭제하면 남은 팀을 선택한다', async ({ page }) => {
+  await addTeam(page, '기획팀')
+  await addTeam(page, '운영팀')
+
+  const removeButton = page.getByRole('button', { name: '운영팀 삭제' })
+  await removeButton.locator('..').hover()
+  await removeButton.click()
+
+  await expect(page.getByRole('radio', { name: '운영팀' })).toHaveCount(0)
+  await expect(page.getByRole('radio', { name: '기획팀' })).toBeChecked()
+  await expect(page.getByRole('radio', { name: '전체' })).toHaveCount(0)
+})
+
 test('S11: 첨부파일 영역은 빈 첨부 카드와 업로드 dropzone을 표시한다', async ({
   page,
 }) => {
@@ -378,6 +400,7 @@ test('S12: 분류와 첨부파일 삭제 control은 hover 시 공간과 함께 �
 
   await expect(attachmentGroup(page).getByText('운영 안내.pdf')).toBeVisible()
   await expect(attachmentGroup(page).getByText('행사 이미지.png')).toBeVisible()
+  await addTeam(page, '팀 이름1')
   const categoryRemove = page.locator('button[aria-label="팀 이름1 삭제"]')
   const attachmentRemove = page.locator(
     'button[aria-label="운영 안내.pdf 삭제"]',
@@ -464,9 +487,15 @@ test('S13: 첨부 파일을 제거하면 빈 첨부 카드로 돌아간다', asy
 })
 
 async function fillValidNotice(page: Page, title: string) {
-  await page.getByRole('radio', { name: /팀 이름1/ }).check()
   await page.getByLabel(/제목/).fill(title)
   await page.getByLabel(/내용/).fill('공지 내용입니다.')
+}
+
+async function addTeam(page: Page, teamName: string) {
+  await page.getByRole('button', { name: '팀 추가' }).click()
+  const dialog = page.getByRole('dialog', { name: '팀 추가하기' })
+  await dialog.getByRole('textbox', { name: '팀 이름' }).fill(teamName)
+  await dialog.getByRole('button', { name: '다음' }).click()
 }
 
 function attachmentGroup(page: Page) {
